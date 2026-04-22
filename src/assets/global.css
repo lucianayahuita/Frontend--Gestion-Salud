@@ -1,0 +1,48 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;600;700&display=swap');
+:root {
+  /* Paleta de Colores */
+  --primary-color: rgba(252, 254, 254, 1);    /* Fondos */
+  --primary-button-color: black;
+  --secondary-color: rgba(15, 122, 90, 1);  /* Verde para formularios */
+  --button1-color:rgba(209, 250, 229, 1); /* Verde claro para botones */
+  --cards1-color:rgba(13, 148, 136, 1); /*Turquesa para cards*/
+  --hover-color: rgba(121, 192, 164, 0.26); /* Azul para hover */
+  --title-color:white; /*Para titulos*/
+  --subtititle2-color:rgba(21, 158, 236, 1); /*Para subtitulos 1*/
+  --subtitle3-color:rgba(191, 210, 248, 1);/*Para algunas cards y puede que algunos titulos de formularios para sus titulos*/
+  --success: #28a745;          /* Verde para "Guardado con éxito" */
+  --error: #dc3545;            /* Rojo para errores */
+  --warning: #ffc107;
+  
+  /* Tipografía */
+  --font-work: 'Work Sans', sans-serif;
+}
+
+/* Configuración Básica */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Configuración de Títulos */
+h1, h2 {
+  font-family: var(--font-work);
+  color: var(--title-color);
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+.title-header {
+  font-size: 2.5rem;
+  letter-spacing: -1px;
+}
