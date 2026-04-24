@@ -28,11 +28,35 @@ const routes = [
     meta: { requiresAuth: true, role: 'medico' }
   },
   {
-    path: '/admin/dashboard',
-    name: 'admin-dash',
-    component: () => import('../modules/views/Administrador/Administrador.vue'),
-    meta: { requiresAuth: true, role: 'administrador' }
-  },
+   path: '/admin',
+  component: () => import('../Layouts/AdministradorLayout.vue'),
+  children: [
+       {
+       path: '',
+        redirect: 'dashboard'
+       },
+       {
+          path: 'dashboard',
+          component: () => import('../modules/views/Administrador/Dashboard.vue')
+       },
+       {
+           path: 'pacientes',
+           component: () => import('../modules/views/Administrador/Pacientes.vue')
+       },
+       {
+           path: 'medicos',
+           component: () => import('../modules/views/Administrador/Medicos.vue')
+      },
+       {
+           path: 'administradores',
+          component: () => import('../modules/views/Administrador/Administradores.vue')
+       },
+       {
+         path: 'farmaceuticos',
+          component: () => import('../modules/views/Administrador/Farmaceuticos.vue')
+       }
+        ]
+    },
   {
     path: '/farmaceutico/dashboard',
     name: 'farmacia-dash',
