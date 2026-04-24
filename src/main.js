@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
-import router from './router' // Esto busca automáticamente src/router/index.js
+import router from './router'
 
 import './assets/global.css'
 import { BaseButton } from './components'

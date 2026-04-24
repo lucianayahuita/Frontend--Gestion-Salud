@@ -1,23 +1,39 @@
 import { defineStore } from 'pinia';
 
-// El nombre 'useAuthStore' debe coincidir exactamente con el import del router
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    // token: localStorage.getItem('token') || null,
-    // user: JSON.parse(localStorage.getItem('user')) || null
+    user: (() => {
+      try {
+        const stored = localStorage.getItem('user');
+        return stored && stored !== 'undefined' ? JSON.parse(stored) : null;
+      } catch {
+        return null;
+      }
+    })(),
+    token: localStorage.getItem('token') || null,
   }),
+  
+  getters: {
+    isAuthenticated: (state) => !!state.token,
+    userRole: (state) => state.user?.role
+  },
+  
   actions: {
-    // setAuth(user, token) {
-    //   this.user = user;
-    //   this.token = token;
-    //   localStorage.setItem('token', token);
-    //   localStorage.setItem('user', JSON.stringify(user));
-    // },
-    // clearAuth() {
-    //   this.user = null;
-    //   this.token = null;
-    //   localStorage.removeItem('token');
-    //   localStorage.removeItem('user');
-    // }
+    setToken(token) {
+      this.token = token;
+      localStorage.setItem('token', token);
+    },
+
+    setUser(user) {
+      this.user = user;
+      localStorage.setItem('user', JSON.stringify(user));
+    },
+
+    logout() {
+      this.user = null;
+      this.token = null;
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
   }
 });

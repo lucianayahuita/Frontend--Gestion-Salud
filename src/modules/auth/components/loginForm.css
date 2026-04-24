@@ -1,4 +1,4 @@
-@import "src/assets/global.css";
+@import "../../../assets/global.css";
 .fondo {
   background-color: var(--secondary-color);
   height: 100vh;
@@ -107,4 +107,42 @@ img {
   width: 100%;               
   margin: -20px auto 30px;    
   opacity: 0.6;              
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Cambia a vw para asegurar el ancho total */
+  height: 100vh; /* Cambia a vh para asegurar el alto total */
+  background: rgba(0, 0, 0, 0.8); /* Más oscuro para notar la diferencia */
+  display: flex; /* Si esto no está, el modal no se centra y puede que no se vea */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999 !important; /* El valor más alto posible */
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  position: relative; 
+  border-color: var(--secondary-color) 30px solid;
+  z-index: 10000;
+}
+.btn-entendido {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: var(--secondary-color);
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+.modal-content h3 {
+  margin-bottom: 15px;
+  font-family: var(--font-work);
 }

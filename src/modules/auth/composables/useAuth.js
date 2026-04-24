@@ -1,9 +1,10 @@
 import { ref } from 'vue';
-import { useAuthStore } from '../../../store/auth.js'; // Importas el almacén que acabas de crear
+import { useAuthStore } from '../../../store/auth.js'; 
 import { useRouter } from 'vue-router';
+import api from '../../../api/axios.js'; // ✅ Cambiado
 
 export const useAuth = () => {
-  //const authStore = useAuthStore();
+  const authStore = useAuthStore(); 
   const router = useRouter();
   const loading = ref(false);
   const error = ref(null);
@@ -13,53 +14,38 @@ export const useAuth = () => {
     error.value = null;
 
     try {
-      // 1. Simulación de la respuesta de Laravel
-      // Cuando el back esté listo, aquí usarás: const { data } = await axios.post('/login', credentials);
-      const mockResponse = await simulateApiCall(credentials);
+      const { data } = await api.post('/login', { // ✅ Cambiado
+        email: credentials.email, 
+        password: credentials.password
+      });
 
-      // 2. Guardamos en el STORE (esto actualiza el token y localStorage)
-      //authStore.setAuth(mockResponse.user, mockResponse.token);
+      authStore.setToken(data.data.token);
+      authStore.setUser(data.data.user);
 
-      // 3. Redirigimos según el rol que vino en el DTO
       const routes = {
         administrador: '/admin/dashboard',
+        admin: '/admin/dashboard', 
         medico: '/medico/dashboard',
         paciente: '/paciente/dashboard',
         farmaceutico: '/farmaceutico/dashboard'
       };
 
-      const target = routes[mockResponse.user.role] || '/paciente/dashboard';
+      const role = data.data.user.role.nombre.toLowerCase();
+      const target = routes[role] || '/login';
+      
       router.push(target);
 
     } catch (err) {
-      error.value = "Error al iniciar sesión. Revisa tus datos.";
+      error.value = err.response?.data?.message || "Credenciales incorrectas";
+      throw err;
     } finally {
       loading.value = false;
     }
   };
 
   const logout = () => {
-    authStore.clearAuth();
+    authStore.logout();
     router.push('/login');
-  };
-
-  // Función interna para simular el retraso del servidor
-  const simulateApiCall = (credentials) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const user = credentials.usuario.toLowerCase();
-        let role = 'paciente';
-        
-        if (user.includes('admin')) role = 'administrador';
-        if (user.includes('doc')) role = 'medico';
-        if (user.includes('farma')) role = 'farmaceutico';
-
-        resolve({
-          token: 'token-generado-por-laravel-2026',
-          user: { name: credentials.usuario, role: role }
-        });
-      }, 1000);
-    });
   };
 
   return {

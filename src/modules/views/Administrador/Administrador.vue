@@ -1,350 +1,377 @@
 <template>
-  <div class="dashboard-container">
-    <header class="dash-header">
-      <div class="header-left">
-        <div class="logo-mark">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M9 2C5.69 2 3 4.69 3 8c0 2.1 1.08 3.95 2.72 5.04L5.25 16h7.5l-.47-2.96C13.92 11.95 15 10.1 15 8c0-3.31-2.69-6-6-6z" fill="white"/>
-          </svg>
-        </div>
-        <div>
-          <h1 class="header-title">Panel Administrador</h1>
-          <p class="header-sub">Gestion Salud · Sistema de salud</p>
-        </div>
-      </div>
-      <button @click="logout" class="btn-logout">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2H2v10h3M9 10l3-3-3-3M12 7H5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Cerrar sesión
-      </button>
-    </header>
+  <div class="dashboard">
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon stat-icon--teal">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3" y="4" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M6 2v4M12 2v4M3 8h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
-        <div class="stat-body">
-          <span class="stat-label">Citas hoy</span>
-          <span class="stat-value">8</span>
-        </div>
-        <div class="stat-trend">+2 vs ayer</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon stat-icon--blue">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M3 15c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </div>
-        <div class="stat-body">
-          <span class="stat-label">Pacientes a cargo</span>
-          <span class="stat-value">24</span>
-        </div>
-        <div class="stat-trend">Total activos</div>
+    <!-- Título -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-sub">Resumen General del Sistema</p>
       </div>
     </div>
 
-    <section class="main-content">
-      <div class="section-header">
-        <h2 class="section-title">Próximas consultas</h2>
-        <span class="section-badge">Hoy</span>
+    <!-- Tarjetas de estadísticas -->
+    <div class="stats-grid">
+      <div class="stat-card stat-card--green">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16" stroke="currentColor" stroke-width="1.8"/><path d="M12 11V7M10 9h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="9" y="14" width="6" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/></svg>
+        </div>
+        <div class="stat-number">24</div>
+        <div class="stat-label">Médicos activos</div>
       </div>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Paciente</th>
-              <th>Hora</th>
-              <th>Motivo</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="i in 3" :key="i" class="table-row">
-              <td>
-                <div class="patient-cell">
-                  <div class="avatar">P{{ i }}</div>
-                  <span>Paciente Ejemplo {{ i }}</span>
-                </div>
-              </td>
-              <td><span class="time-badge">10:00 AM</span></td>
-              <td class="muted">Control General</td>
-              <td>
-                <button class="btn-action">
-                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2" width="11" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 5.5h5M4 7.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-                  Ver historial
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="stat-card stat-card--blue">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="stat-number">12</div>
+        <div class="stat-label">Administradores activos</div>
       </div>
-    </section>
+
+      <div class="stat-card stat-card--yellow">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M3 20c0-3.3 2.7-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M16 11l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="stat-number">4</div>
+        <div class="stat-label">Administradores activos</div>
+      </div>
+
+      <div class="stat-card stat-card--teal">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2M12 12v4M10 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div class="stat-number">7</div>
+        <div class="stat-label">Farmacéuticos activos</div>
+      </div>
+    </div>
+
+    <!-- Sección central -->
+    <div class="bottom-grid">
+
+      <!-- Usuarios recientes -->
+      <div class="card card--users">
+        <div class="card-header">
+          <h2 class="card-title">Usuarios Recientemente Registrados</h2>
+        </div>
+        <div class="user-list">
+          <div class="user-item" v-for="user in recentUsers" :key="user.id">
+            <div class="user-avatar">{{ user.initial }}</div>
+            <div class="user-info">
+              <span class="user-name">{{ user.name }}</span>
+              <span class="user-role">{{ user.role }}</span>
+            </div>
+            <span class="status-badge" :class="user.status === 'Activo' ? 'status-badge--active' : 'status-badge--inactive'">
+              {{ user.status }}
+            </span>
+          </div>
+
+          <!-- Empty state -->
+          <div class="empty-state" v-if="recentUsers.length === 0">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <p>Sin usuarios registrados recientemente</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones rápidas -->
+      <div class="card card--actions">
+        <div class="card-header">
+          <h2 class="card-title card-title--accent">Acciones Rápidas</h2>
+        </div>
+        <div class="action-list">
+          <button class="action-btn action-btn--dark" @click="$router.push('/admin/medicos/nuevo')">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Registrar Médico
+          </button>
+          <button class="action-btn action-btn--teal" @click="$router.push('/admin/pacientes/nuevo')">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Registrar Paciente
+          </button>
+          <button class="action-btn action-btn--soft" @click="$router.push('/admin/administradores/nuevo')">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Registrar Administrador
+          </button>
+          <button class="action-btn action-btn--outline" @click="$router.push('/admin/farmaceuticos/nuevo')">
+            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Registrar Farmacéutico
+          </button>
+        </div>
+      </div>
+
+    </div>
   </div>
 </template>
 
 <script setup>
-// import { useAuth } from '../../auth/composables/useAuth';
-// const { logout } = useAuth();
+import { ref } from 'vue';
 
-function logout() {}
+const recentUsers = ref([
+  { id: 1, name: 'Laura Yahuita Lazarte', role: 'Médico',         initial: 'L', status: 'Activo' },
+  { id: 2, name: 'Carlos Quispe Mamani', role: 'Farmacéutico',    initial: 'C', status: 'Activo' },
+  { id: 3, name: 'Ana Flores Condori',   role: 'Administrador',   initial: 'A', status: 'Activo' },
+  { id: 4, name: 'Pedro Salinas Roca',   role: 'Médico',          initial: 'P', status: 'Inactivo' },
+]);
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@600;700&display=swap');
 
-.dashboard-container {
-  padding: 24px;
+.dashboard {
   font-family: 'DM Sans', sans-serif;
-  background: #f5f7f5;
-  min-height: 100vh;
-  color: #1a2e1a;
-}
-
-/* ── Header ── */
-.dash-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #1D9E75;
-  border-radius: 12px;
-  padding: 14px 20px;
-  margin-bottom: 20px;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo-mark {
-  width: 36px;
-  height: 36px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.header-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #fff;
-  margin: 0;
-}
-
-.header-sub {
-  font-size: 12px;
-  color: rgba(255,255,255,0.65);
-  margin: 2px 0 0;
-}
-
-.btn-logout {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  color: rgba(255,255,255,0.85);
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
-  padding: 7px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.btn-logout:hover {
-  background: rgba(255,255,255,0.22);
-  color: #fff;
-}
-
-/* ── Stats ── */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.stat-card {
-  background: #fff;
-  border: 0.5px solid #d8e8d8;
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.stat-icon--teal { background: #E1F5EE; color: #0F6E56; }
-.stat-icon--blue { background: #E6F1FB; color: #185FA5; }
-
-.stat-body {
+  color: #1a2b2e;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  flex: 1;
+  gap: 22px;
+}
+
+/* ── Page header ── */
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.page-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a2b2e;
+  margin: 0 0 2px;
+}
+
+.page-sub {
+  font-size: 13px;
+  color: #3aa085;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+/* ── Stats grid ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .stats-grid { grid-template-columns: 1fr; } }
+
+.stat-card {
+  border-radius: 16px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1.5px solid transparent;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(30,80,70,0.1);
+}
+
+.stat-card--green  { background: #edfaf5; border-color: #b2e8d6; }
+.stat-card--blue   { background: #eef4fb; border-color: #b8d4f0; }
+.stat-card--yellow { background: #fefaed; border-color: #f0e0a0; }
+.stat-card--teal   { background: #e8f7f3; border-color: #a8dece; }
+
+.stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.stat-card--green  .stat-icon { color: #1D9E75; }
+.stat-card--blue   .stat-icon { color: #2563eb; }
+.stat-card--yellow .stat-icon { color: #b45309; }
+.stat-card--teal   .stat-icon { color: #0d7a63; }
+
+.stat-icon svg { width: 20px; height: 20px; }
+
+.stat-number {
+  font-family: 'Sora', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  color: #1a2b2e;
 }
 
 .stat-label {
   font-size: 12px;
-  color: #6b7a6b;
-}
-
-.stat-value {
-  font-size: 26px;
   font-weight: 500;
-  color: #1a2e1a;
-  line-height: 1;
+  color: #5a7a80;
+  line-height: 1.3;
 }
 
-.stat-trend {
-  font-size: 11px;
-  color: #0F6E56;
-  background: #E1F5EE;
-  padding: 2px 8px;
-  border-radius: 20px;
-  align-self: flex-start;
-  margin-top: 4px;
-  white-space: nowrap;
+/* ── Bottom grid ── */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 16px;
+  align-items: start;
 }
 
-/* ── Section ── */
-.main-content {
+@media (max-width: 820px) { .bottom-grid { grid-template-columns: 1fr; } }
+
+/* ── Cards ── */
+.card {
   background: #fff;
-  border: 0.5px solid #d8e8d8;
-  border-radius: 12px;
+  border: 1.5px solid #e0eeea;
+  border-radius: 16px;
   overflow: hidden;
 }
 
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 0.5px solid #e8f0e8;
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #edf4f1;
 }
 
-.section-title {
+.card-title {
   font-size: 14px;
-  font-weight: 500;
-  color: #1a2e1a;
+  font-weight: 600;
+  color: #1a2b2e;
   margin: 0;
 }
 
-.section-badge {
-  font-size: 11px;
-  background: #E1F5EE;
-  color: #0F6E56;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-weight: 500;
+.card-title--accent {
+  color: #1D9E75;
 }
 
-/* ── Table ── */
-.table-wrap {
-  overflow-x: auto;
+/* ── User list ── */
+.user-list {
+  display: flex;
+  flex-direction: column;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-thead th {
-  padding: 10px 18px;
-  text-align: left;
-  font-size: 11px;
-  font-weight: 500;
-  color: #6b7a6b;
-  background: #f8faf8;
-  border-bottom: 0.5px solid #e8f0e8;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
-
-tbody td {
-  padding: 11px 18px;
-  font-size: 13px;
-  border-bottom: 0.5px solid #f0f5f0;
-  color: #1a2e1a;
-  vertical-align: middle;
-}
-
-tbody tr:last-child td {
-  border-bottom: none;
-}
-
-tbody tr:hover td {
-  background: #f8faf8;
-}
-
-.patient-cell {
+.user-item {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 12px;
+  padding: 13px 20px;
+  border-bottom: 1px solid #f2f7f5;
+  transition: background 0.15s;
 }
 
-.avatar {
-  width: 28px;
-  height: 28px;
+.user-item:last-child { border-bottom: none; }
+.user-item:hover { background: #f8fdfb; }
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: #E1F5EE;
-  color: #085041;
-  font-size: 10px;
-  font-weight: 500;
+  background: #d6f5eb;
+  color: #0d7a63;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
-.time-badge {
-  font-size: 12px;
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1a2b2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 11.5px;
+  color: #3aa085;
   font-weight: 500;
-  background: #f0f5f0;
-  color: #3B6D11;
-  padding: 2px 8px;
-  border-radius: 6px;
 }
 
-.muted {
-  color: #6b7a6b;
+.status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
 }
 
-.btn-action {
-  display: inline-flex;
+.status-badge--active   { background: #d6f5eb; color: #0d7a63; }
+.status-badge--inactive { background: #fde8e8; color: #b91c1c; }
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 5px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 500;
-  color: #0F6E56;
-  background: #E1F5EE;
-  border: 0.5px solid #9FE1CB;
-  padding: 5px 12px;
-  border-radius: 7px;
-  cursor: pointer;
-  transition: background 0.15s;
+  gap: 8px;
+  padding: 32px;
+  color: #8aafaa;
+}
+.empty-state svg { width: 36px; height: 36px; opacity: 0.4; }
+.empty-state p { font-size: 13px; margin: 0; }
+
+/* ── Action buttons ── */
+.action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 12px;
+  gap: 8px;
 }
 
-.btn-action:hover {
-  background: #9FE1CB;
-  color: #085041;
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 10px;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  text-align: left;
 }
+
+.action-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+.action-btn--dark {
+  background: #1a2b2e;
+  color: #fff;
+}
+.action-btn--dark:hover { background: #243638; box-shadow: 0 4px 12px rgba(26,43,46,0.25); }
+
+.action-btn--teal {
+  background: #1D9E75;
+  color: #fff;
+}
+.action-btn--teal:hover { background: #179063; box-shadow: 0 4px 12px rgba(29,158,117,0.3); }
+
+.action-btn--soft {
+  background: #edfaf5;
+  color: #0d7a63;
+  border: 1.5px solid #b2e8d6;
+}
+.action-btn--soft:hover { background: #d6f5eb; }
+
+.action-btn--outline {
+  background: #f4f8f7;
+  color: #3d5260;
+  border: 1.5px solid #dce8e4;
+}
+.action-btn--outline:hover { background: #e8f0ed; }
 </style>

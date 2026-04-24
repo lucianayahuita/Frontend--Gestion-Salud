@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-// 1. Corregido con ../ para salir de router e ir a store
-import { useAuthStore } from '../store/auth.js';
+import MainLayout from '@/layouts/MainLayout.vue'; 
 
 const routes = [
   {
@@ -9,35 +8,38 @@ const routes = [
   },
   {
     path: '/login',
-    name: 'login',
-    // 2. Corregido: Si está en componentes, usamos ../ para subir
-    component: () => import('../modules/auth/components/login.vue')
-  },
-  // --- RUTAS MODULARES ---
-  {
-    path: '/paciente/dashboard',
-    name: 'paciente-dash',
-    // 3. Corregido: Ajustado a la ruta que me dijiste (views fuera de módulos)
-    component: () => import('../modules/views/Paciente/Paciente.vue'),
-    meta: { requiresAuth: true, role: 'paciente' }
+    name: 'Login',
+    component: () => import('@/modules/auth/components/login.vue')
   },
   {
-    path: '/medico/dashboard',
-    name: 'medico-dash',
-    component: () => import('../modules/views/Medico/Medico.vue'),
-    meta: { requiresAuth: true, role: 'medico' }
+    // RUTA PADRE: Admin
+    path: '/admin',
+    component: MainLayout,
+    meta: { requiresAuth: true, role: 'administrador' },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'AdminDashboard',
+        component: () => import('@/modules/views/Administrador/Administrador.vue')
+      },
+      {
+        path: 'pacientes',
+        name: 'AdminPacientes',
+        component: () => import('@/modules/views/Paciente/Paciente.vue')
+      },
+    ]
   },
   {
-    path: '/admin/dashboard',
-    name: 'admin-dash',
-    component: () => import('../modules/views/Administrador/Administrador.vue'),
-    meta: { requiresAuth: true, role: 'administrador' }
-  },
-  {
-    path: '/farmaceutico/dashboard',
-    name: 'farmacia-dash',
-    component: () => import('../modules/views/Farmaceutico/Farmaceutico.vue'),
-    meta: { requiresAuth: true, role: 'farmaceutico' }
+    path: '/medico',
+    component: MainLayout,
+    meta: { requiresAuth: true, role: 'medico' },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'MedicoDashboard',
+        component: () => import('@/modules/views/Medico/Medico.vue')
+      }
+    ]
   }
 ];
 
@@ -46,34 +48,21 @@ const router = createRouter({
   routes
 });
 
-// --- EL GUARDIÁN DE RUTAS ---
+// GUARD DE NAVEGACIÓN 
+router.beforeEach((to, from, next) => {
+  /* 
+  const token = localStorage.getItem('token');
+  const userRole = localStorage.getItem('role');
 
-router.beforeEach((to, from) => {
-  const authStore = useAuthStore();
-  // const isAuthenticated = !!authStore.token;
-  // const userRole = authStore.user?.role;
-
-  // if (to.meta.requiresAuth && !isAuthenticated) {
-  //   return { name: 'login' };
-  // }
-
-  // if (to.name === 'login' && isAuthenticated) {
-  //   return getDashboardPath(userRole);
-  // }
-
-  // if (to.meta.role && to.meta.role !== userRole) {
-  //   return getDashboardPath(userRole);
-  // }
+  if (to.meta.requiresAuth && !token) {
+    next('/login');
+  } else if (to.meta.role && to.meta.role !== userRole) {
+    next('/login'); 
+  } else {
+    next();
+  }
+  */
+  next(); 
 });
-
-function getDashboardPath(role) {
-  const paths = {
-    administrador: '/admin/dashboard',
-    medico: '/medico/dashboard',
-    paciente: '/paciente/dashboard',
-    farmaceutico: '/farmaceutico/dashboard'
-  };
-  return paths[role] || '/login';
-}
 
 export default router;
