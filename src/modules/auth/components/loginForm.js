@@ -18,7 +18,8 @@ export function useLoginForm() {
     if (!email.value || !password.value) {
       errorMessage.value = "Por favor, completa todos los campos";
       showErrorModal.value = true;
-      return; // ✅ Sin redirect aquí
+      setTimeout(() => closeError(), 3000); // ✅ Cierra solo después de 3s
+      return;
     }
 
     try {
@@ -27,22 +28,23 @@ export function useLoginForm() {
         password: password.value
       });
 
-      showSuccessModal.value = true; 
+      showSuccessModal.value = true;
+      setTimeout(() => closeSuccess(), 2000); // ✅ Cierra y redirige después de 2s
 
     } catch (err) {
       errorMessage.value = err.message || "Credenciales incorrectas";
-      showErrorModal.value = true; 
+      showErrorModal.value = true;
+      setTimeout(() => closeError(), 3000); // ✅ Cierra solo después de 3s
     }
   };
 
   const closeError = () => {
-    showErrorModal.value = false;
+    showErrorModal.value = false; // ✅ Solo cierra
   };
 
   const closeSuccess = () => {
     showSuccessModal.value = false;
-    router.push('/admin/dashboard'); // ✅ Redirige solo al cerrar éxito
-    
+    router.push('/admin/dashboard'); // ✅ Solo cierra y redirige
   };
 
   return {
@@ -51,9 +53,9 @@ export function useLoginForm() {
     loading,
     errorMessage,
     showErrorModal,
-    showSuccessModal, // ✅ Agregado
+    showSuccessModal,
     handleLogin,
     closeError,
-    closeSuccess // ✅ Agregado
+    closeSuccess
   };
 }
