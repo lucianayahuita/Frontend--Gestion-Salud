@@ -5,18 +5,16 @@
       <!-- Logo & Brand -->
       <div class="sidebar-header">
         <div class="brand-icon">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="20" r="18" fill="#4EB89D" opacity="0.15"/>
-            <path d="M20 10 L20 30 M10 20 L30 20" stroke="#4EB89D" stroke-width="3.5" stroke-linecap="round"/>
-            <circle cx="20" cy="20" r="5" fill="#4EB89D"/>
-          </svg>
+          <div class="brand-icon">
+            <img src="@/assets/gestion-salud-logo.png" alt="Logo Gestión Salud" />
+          </div>
         </div>
         <div class="brand-text" v-if="!sidebarCollapsed">
           <span class="brand-name">Gestión</span>
           <span class="brand-sub">Salud</span>
         </div>
         <button class="collapse-btn" @click="sidebarCollapsed = !sidebarCollapsed">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 24 24" fill="none">
             <path :d="sidebarCollapsed ? 'M9 18l6-6-6-6' : 'M15 18l-6-6 6-6'"
               stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
@@ -28,7 +26,7 @@
         <div class="user-avatar">{{ userInitial }}</div>
         <div class="user-info">
           <span class="user-name">{{ userName }}</span>
-          <span class="user-role-badge" :class="userRole">{{ roleLabel }}</span>
+          <span class="user-role-badge" :class="roleClass">{{ roleLabel }}</span>
         </div>
       </div>
       <div class="user-avatar-sm" v-else>{{ userInitial }}</div>
@@ -37,74 +35,51 @@
       <nav class="sidebar-nav">
         <div class="nav-section-label" v-if="!sidebarCollapsed">Principal</div>
 
+        <!-- Dashboard siempre visible -->
         <router-link :to="dashboardPath" class="nav-item" active-class="nav-item--active">
           <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+              <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+              <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
+            </svg>
           </span>
           <span class="nav-label" v-if="!sidebarCollapsed">Dashboard</span>
         </router-link>
 
-        <!-- Paciente -->
-        <template v-if="userRole === 'paciente'">
-          <div class="nav-section-label" v-if="!sidebarCollapsed">Mi Espacio</div>
-          <router-link to="/paciente/citas" class="nav-item" active-class="nav-item--active">
-            <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </span>
-            <span class="nav-label" v-if="!sidebarCollapsed">Mis Citas</span>
-          </router-link>
-          <router-link to="/paciente/perfil" class="nav-item" active-class="nav-item--active">
-            <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </span>
-            <span class="nav-label" v-if="!sidebarCollapsed">Mi Perfil</span>
-          </router-link>
-        </template>
-
-        <!-- Médico -->
-        <template v-if="userRole === 'medico'">
-          <div class="nav-section-label" v-if="!sidebarCollapsed">Gestión</div>
-          <router-link to="/medico/pacientes" class="nav-item" active-class="nav-item--active">
-            <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M3 20c0-3.3 2.7-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M21 20c0-3.3-2.7-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </span>
-            <span class="nav-label" v-if="!sidebarCollapsed">Pacientes</span>
-          </router-link>
-          <router-link to="/medico/citas" class="nav-item" active-class="nav-item--active">
-            <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </span>
-            <span class="nav-label" v-if="!sidebarCollapsed">Citas</span>
-          </router-link>
-        </template>
-
-        <!-- Administrador -->
-        <template v-if="userRole === 'administrador'">
+        <!-- ── Administrador (rol_id: 1) ── -->
+        <template v-if="rolId === 1">
           <div class="nav-section-label" v-if="!sidebarCollapsed">Administración</div>
-          <router-link to="/admin/pacientes" class="nav-item" active-class="nav-item--active">
+
+          <router-link :to="{ name: 'AdminPacientes' }" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
               <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M3 20c0-3.3 2.7-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M21 20c0-3.3-2.7-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Pacientes</span>
           </router-link>
-          <router-link to="/admin/medicos" class="nav-item" active-class="nav-item--active">
+
+          <router-link :to="{ name: 'AdminMedicos' }" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
               <svg viewBox="0 0 24 24" fill="none"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16" stroke="currentColor" stroke-width="1.8"/><path d="M12 11V7M10 9h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="9" y="14" width="6" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/></svg>
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Médicos</span>
           </router-link>
-          <router-link to="/admin/administradores" class="nav-item" active-class="nav-item--active">
+
+          <router-link :to="{ name: 'AdminGestionAdmins' }" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
               <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Administradores</span>
           </router-link>
-          <router-link to="/admin/farmaceuticos" class="nav-item" active-class="nav-item--active">
+
+          <router-link :to="{ name: 'AdminFarmaceuticos' }" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M9 3H5a2 2 0 00-2 2v4a2 2 0 002 2h4M9 3v8M9 3h6M9 11h6M15 3h4a2 2 0 012 2v4a2 2 0 01-2 2h-4M15 3v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M3 17h18M7 17v4M17 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Farmacéuticos</span>
           </router-link>
+
           <router-link to="/admin/reportes" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
               <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -113,20 +88,74 @@
           </router-link>
         </template>
 
-        <!-- Farmacéutico -->
-        <template v-if="userRole === 'farmaceutico'">
-          <div class="nav-section-label" v-if="!sidebarCollapsed">Farmacia</div>
-          <router-link to="/farmaceutico/inventario" class="nav-item" active-class="nav-item--active">
+        <!-- ── Médico (rol_id: 2) ── -->
+        <template v-if="rolId === 2">
+          <div class="nav-section-label" v-if="!sidebarCollapsed">Gestión</div>
+          <router-link to="/medico/pacientes" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2M12 12v4M10 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M3 20c0-3.3 2.7-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="17" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M21 20c0-3.3-2.7-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
             </span>
-            <span class="nav-label" v-if="!sidebarCollapsed">Inventario</span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Pacientes</span>
           </router-link>
-          <router-link to="/farmaceutico/recetas" class="nav-item" active-class="nav-item--active">
+          <router-link to="/medico/citas" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="1.8"/><path d="M9 13l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
             </span>
-            <span class="nav-label" v-if="!sidebarCollapsed">Recetas</span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Citas</span>
+          </router-link>
+        </template>
+
+        <!-- ── Recepcionista (rol_id: 3) ── -->
+        <template v-if="rolId === 3">
+          <div class="nav-section-label" v-if="!sidebarCollapsed">Gestión</div>
+          <router-link to="/recepcionista/citas" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Citas</span>
+          </router-link>
+          <router-link to="/recepcionista/pacientes" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Pacientes</span>
+          </router-link>
+        </template>
+
+        <!-- ── Paciente (rol_id: 4) ── -->
+        <template v-if="rolId === 4">
+          <div class="nav-section-label" v-if="!sidebarCollapsed">Mi Espacio</div>
+          <router-link to="/paciente/citas" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Mis Citas</span>
+          </router-link>
+          <router-link to="/paciente/perfil" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Mi Perfil</span>
           </router-link>
         </template>
       </nav>
@@ -135,7 +164,10 @@
       <div class="sidebar-footer">
         <button class="logout-btn" @click="logout">
           <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </span>
           <span class="nav-label" v-if="!sidebarCollapsed">Cerrar Sesión</span>
         </button>
@@ -144,7 +176,6 @@
 
     <!-- Main Content -->
     <div class="layout-body">
-      <!-- Top Bar -->
       <header class="topbar">
         <div class="topbar-left">
           <h1 class="page-title">{{ currentPageTitle }}</h1>
@@ -161,7 +192,6 @@
         </div>
       </header>
 
-      <!-- Router View -->
       <main class="content">
         <router-view />
       </main>
@@ -180,50 +210,54 @@ export default {
     };
   },
   computed: {
-    userRole() {
+    // ✅ Usa rol_id directamente para comparar
+    rolId() {
       const authStore = useAuthStore();
-      return authStore.user?.role || 'administrador';
+      return authStore.user?.rol_id || null;
     },
     userName() {
       const authStore = useAuthStore();
-      return authStore.user?.name || 'Administrador';
+      return authStore.user?.name || 'Usuario';
     },
     userInitial() {
       return this.userName.charAt(0).toUpperCase();
     },
-    dashboardPath() {
-      const map = {
-        administrador: '/admin/dashboard',
-        medico: '/medico/dashboard',
-        paciente: '/paciente/dashboard',
-        farmaceutico: '/farmaceutico/dashboard',
-      };
-      return map[this.userRole] || '/admin/dashboard';
-    },
     roleLabel() {
       const labels = {
-        paciente: 'Paciente',
-        medico: 'Médico',
-        administrador: 'Administrador',
-        farmaceutico: 'Farmacéutico',
-        guest: 'Invitado',
+        1: 'Administrador',
+        2: 'Médico',
+        3: 'Recepcionista',
+        4: 'Paciente',
       };
-      return labels[this.userRole] || this.userRole;
+      return labels[this.rolId] || 'Usuario';
+    },
+    roleClass() {
+      const classes = {
+        1: 'administrador',
+        2: 'medico',
+        3: 'recepcionista',
+        4: 'paciente',
+      };
+      return classes[this.rolId] || 'guest';
+    },
+    dashboardPath() {
+      const paths = {
+        1: '/admin/dashboard',
+        2: '/medico/dashboard',
+        3: '/recepcionista/dashboard',
+        4: '/paciente/dashboard',
+      };
+      return paths[this.rolId] || '/login';
     },
     currentPageTitle() {
       const titles = {
-        '/dashboard': 'Dashboard',
-        '/paciente/citas': 'Mis Citas',
-        '/paciente/perfil': 'Mi Perfil',
-        '/medico/pacientes': 'Pacientes',
-        '/medico/citas': 'Citas',
-        '/admin/pacientes': 'Pacientes',
-        '/admin/medicos': 'Médicos',
-        '/admin/administradores': 'Administradores',
-        '/admin/farmaceuticos': 'Farmacéuticos',
+        '/admin/dashboard': 'Dashboard',
+        '/admin/gestion-pacientes': 'Gestión de Pacientes', // Nombre actualizado
+        '/admin/gestion-medicos': 'Gestión de Médicos',     // Nombre actualizado
+        '/admin/gestion-administradores': 'Gestión de Admins',
+        '/admin/gestion-farmaceuticos': 'Gestión Farmacéutica',
         '/admin/reportes': 'Reportes',
-        '/farmaceutico/inventario': 'Inventario',
-        '/farmaceutico/recetas': 'Recetas',
+        // ... los demás se mantienen igual
       };
       return titles[this.$route?.path] || 'Panel';
     },
@@ -242,7 +276,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@500;600;700&display=swap');
 
@@ -290,7 +323,7 @@ export default {
 .main-layout {
   display: flex;
   height: 100vh;
-  background: var(--bg-page);
+  background: rgba(255,255,255,0.65);
   font-family: 'DM Sans', sans-serif;
   color: var(--text-body);
   overflow: hidden;
@@ -324,9 +357,10 @@ export default {
   border-bottom: 1px solid #eef3f1;
 }
 
-.brand-icon svg {
+.brand-icon img {
   width: 38px;
   height: 38px;
+  object-fit: contain;
   flex-shrink: 0;
 }
 
@@ -464,29 +498,30 @@ export default {
   padding: 10px 10px 4px;
 }
 
+/* ── Nav ── */
 .nav-item {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 9px 10px;
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   text-decoration: none;
-  color: var(--text-body);
+  color: #3d5260; 
   font-size: 13.5px;
   font-weight: 500;
-  transition: background var(--transition), color var(--transition);
+  transition: background 0.22s ease, color 0.22s ease;
   white-space: nowrap;
   overflow: hidden;
 }
 
 .nav-item:hover {
-  background: var(--green-50);
-  color: var(--green-600);
+  background: rgba(15, 122, 90, 1); 
+  color: #ffffff;      
 }
 
 .nav-item--active {
-  background: var(--green-400) !important;
-  color: #fff !important;
+  background: #4EB89D !important;
+  color: #ffffff !important;
   font-weight: 600;
   box-shadow: 0 2px 10px rgba(78,184,157,0.3);
 }
