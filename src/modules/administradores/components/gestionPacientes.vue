@@ -41,9 +41,9 @@
               </span>
             </td>
             <td class="td-acciones">
-              <button class="btn-accion btn-ver"      @click="$emit('ver', p)"      title="Ver">
+              <button class="btn-accion btn-ver" @click="abrirVer(p)" title="Ver">
                 <Eye :size="15" />
-              </button>
+            </button>
               <button class="btn-accion btn-editar"   @click="$emit('editar', p)"   title="Editar">
                 <Pencil :size="15" />
               </button>
@@ -60,6 +60,11 @@
       @close="mostrarModal = false"
       @actualizar="cargarPacientes(); mostrarModal = false"
     />
+    <VerPaciente 
+        v-if="mostrarVer && pacienteSeleccionado" 
+        :pacienteId="Number(pacienteSeleccionado.id)" 
+        @close="mostrarVer = false" 
+        />
   </div>
 </template>
 
@@ -68,11 +73,19 @@ import { ref } from 'vue'
 import { Search, Eye, Pencil, Trash2 } from 'lucide-vue-next'
 import { useGestionPacientes } from '../composables/useGestionPacientes'
 import RegistroPaciente from './RegistroPaciente.vue'
+import VerPaciente from './verPaciente.vue'
 
 defineEmits(['ver', 'editar', 'eliminar'])
 
-const { cargando, error, busqueda, pacientesFiltrados, calcularEdad } = useGestionPacientes()
+const { cargando, error, busqueda, pacientesFiltrados, calcularEdad, cargarPacientes } = useGestionPacientes()
 const mostrarModal = ref(false)
+const pacienteSeleccionado = ref(null)
+const mostrarVer = ref(false)
+
+const abrirVer = (p) => {
+  pacienteSeleccionado.value = p
+  mostrarVer.value = true
+}
 </script>
 
 <style scoped>
