@@ -47,9 +47,9 @@
               <button class="btn-accion btn-editar"   @click="$emit('editar', p)"   title="Editar">
                 <Pencil :size="15" />
               </button>
-              <button class="btn-accion btn-eliminar" @click="$emit('eliminar', p)" title="Eliminar">
+              <button class="btn-accion btn-eliminar" @click="abrirEliminar(p)" title="Eliminar">
                 <Trash2 :size="15" />
-              </button>
+            </button>
             </td>
           </tr>
         </tbody>
@@ -65,6 +65,12 @@
         :pacienteId="Number(pacienteSeleccionado.id)" 
         @close="mostrarVer = false" 
         />
+        <EliminarPaciente 
+        v-if="mostrarEliminar" 
+        :paciente="pacienteAEliminar" 
+        @close="mostrarEliminar = false"
+        @actualizar="cargarPacientes" 
+        />
   </div>
 </template>
 
@@ -74,6 +80,7 @@ import { Search, Eye, Pencil, Trash2 } from 'lucide-vue-next'
 import { useGestionPacientes } from '../composables/useGestionPacientes'
 import RegistroPaciente from './RegistroPaciente.vue'
 import VerPaciente from './verPaciente.vue'
+import EliminarPaciente from './deletePaciente.vue' // Importar el nuevo modal
 
 defineEmits(['ver', 'editar', 'eliminar'])
 
@@ -81,10 +88,17 @@ const { cargando, error, busqueda, pacientesFiltrados, calcularEdad, cargarPacie
 const mostrarModal = ref(false)
 const pacienteSeleccionado = ref(null)
 const mostrarVer = ref(false)
+const mostrarEliminar = ref(false)
+const pacienteAEliminar = ref(null)
 
 const abrirVer = (p) => {
   pacienteSeleccionado.value = p
   mostrarVer.value = true
+}
+
+const abrirEliminar = (p) => {
+  pacienteAEliminar.value = p
+  mostrarEliminar.value = true
 }
 </script>
 
