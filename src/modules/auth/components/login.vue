@@ -43,7 +43,7 @@
       <div v-if="showErrorModal" class="modal-overlay" @click="closeError">
         <div class="modal-content" @click.stop>
           <div class="modal-header">
-            <span style="font-size: 50px;">⚠️</span>
+            <AlertTriangle :size="50" color="#f59e0b" />  <!-- 👈 reemplaza el ⚠️ -->
           </div>
           <h3 style="color: #333;">Atención</h3>
           <p style="color: #666;">{{ errorMessage }}</p>
@@ -58,8 +58,8 @@
       <div v-if="showSuccessModal" class="modal-overlay" @click="closeSuccess">
         <div class="modal-content" @click.stop>
           <div class="modal-header">
-            <span style="font-size: 50px;">✅</span>
-          </div>
+              <CheckCircle :size="50" color="#1D9E75" />  <!-- 👈 reemplaza el ✅ -->
+            </div>
           <h3 style="color: #333;">Inicio de sesión exitoso</h3>
           <p style="color: rgba(13, 148, 136, 1);">Bienvenido a Gestión Salud</p>
           <button class="btn-entendido" @click="closeSuccess">Entendido</button>
@@ -71,7 +71,7 @@
 
 <script setup>
 import { useLoginForm } from './loginForm.js';
-
+import { AlertTriangle, CheckCircle } from 'lucide-vue-next'
 const { 
   email, 
   password, 
@@ -81,7 +81,7 @@ const {
   showErrorModal,
   showSuccessModal,
   closeError,
-  closeSuccess // ✅ Agregado
+  closeSuccess 
 } = useLoginForm();
 </script>
 

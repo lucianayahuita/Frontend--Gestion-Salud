@@ -44,7 +44,7 @@
               <button class="btn-accion btn-ver" @click="abrirVer(p)" title="Ver">
                 <Eye :size="15" />
             </button>
-              <button class="btn-accion btn-editar"   @click="$emit('editar', p)"   title="Editar">
+              <button class="btn-accion btn-editar" @click="abrirEditar(p)" title="Editar">
                 <Pencil :size="15" />
               </button>
               <button class="btn-accion btn-eliminar" @click="abrirEliminar(p)" title="Eliminar">
@@ -65,12 +65,18 @@
         :pacienteId="Number(pacienteSeleccionado.id)" 
         @close="mostrarVer = false" 
         />
-        <EliminarPaciente 
-        v-if="mostrarEliminar" 
-        :paciente="pacienteAEliminar" 
-        @close="mostrarEliminar = false"
-        @actualizar="cargarPacientes" 
-        />
+    <EliminarPaciente 
+    v-if="mostrarEliminar" 
+    :paciente="pacienteAEliminar" 
+    @close="mostrarEliminar = false"
+    @actualizar="cargarPacientes" 
+    />
+    <EditarPaciente 
+      v-if="mostrarEditar" 
+      :paciente="pacienteAEditar" 
+      @close="mostrarEditar = false"
+      @actualizar="cargarPacientes(); mostrarEditar = false" 
+    />
   </div>
 </template>
 
@@ -81,6 +87,7 @@ import { useGestionPacientes } from '../composables/useGestionPacientes'
 import RegistroPaciente from './RegistroPaciente.vue'
 import VerPaciente from './verPaciente.vue'
 import EliminarPaciente from './deletePaciente.vue' // Importar el nuevo modal
+import EditarPaciente from './updatePaciente.vue' // 1. Importado
 
 defineEmits(['ver', 'editar', 'eliminar'])
 
@@ -90,6 +97,8 @@ const pacienteSeleccionado = ref(null)
 const mostrarVer = ref(false)
 const mostrarEliminar = ref(false)
 const pacienteAEliminar = ref(null)
+const mostrarEditar = ref(false) // 2. Estado para el modal
+const pacienteAEditar = ref(null) // 3. Paciente a editar
 
 const abrirVer = (p) => {
   pacienteSeleccionado.value = p
@@ -100,10 +109,16 @@ const abrirEliminar = (p) => {
   pacienteAEliminar.value = p
   mostrarEliminar.value = true
 }
+
+// 4. Función para abrir edición
+const abrirEditar = (p) => {
+  pacienteAEditar.value = p
+  mostrarEditar.value = true
+}
 </script>
 
 <style scoped>
-import '@/assets/global.css'
+@import '@/assets/global.css'; 
 .gp-page { padding: 32px; max-width: 120%; margin: 0 auto; }
 
 .gp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }

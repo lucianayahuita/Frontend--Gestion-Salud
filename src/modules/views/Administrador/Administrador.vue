@@ -101,15 +101,12 @@
 import { ref, computed, onMounted } from 'vue';
 import api from '@/api/axios.js';
 
-// Importación del componente de registro
 import registroPaciente from '@/modules/administradores/components/registroPaciente.vue';
 
-// Estados
 const usuarios = ref([]);
 const cargando = ref(false);
 const mostrarModalPaciente = ref(false);
 
-// ── Cargar todos los usuarios ──
 const cargarUsuarios = async () => {
   cargando.value = true;
   try {
@@ -122,17 +119,21 @@ const cargarUsuarios = async () => {
   }
 };
 
-// ── Conteos por rol_id ──
-const conteos = computed(() => ({
-  medicos:          usuarios.value.filter(u => u.rol_id === 2).length,
-  administradores:  usuarios.value.filter(u => u.rol_id === 1).length,
-  pacientes:        usuarios.value.filter(u => u.rol_id === 4).length,
-  recepcionistas:   usuarios.value.filter(u => u.rol_id === 3).length,
-}));
+const conteos = computed(() => {
+  const activos = usuarios.value.filter(u => u.deleted_at === null);
 
-// ── Últimos 5 usuarios registrados ──
+  return {
+    medicos:          activos.filter(u => u.rol_id === 2).length,
+    administradores:  activos.filter(u => u.rol_id === 1).length,
+    pacientes:        activos.filter(u => u.rol_id === 4).length,
+    recepcionistas:   activos.filter(u => u.rol_id === 3).length,
+  };
+});
+
+
 const usuariosRecientes = computed(() =>
-  [...usuarios.value]
+  usuarios.value
+    .filter(u => u.deleted_at === null) 
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(0, 5)
 );
