@@ -71,11 +71,11 @@ const routes = [
     ]
   },
 
-  // ── Farmacéutico (rol_id: 3) ──
+  // ── Farmacéutico (rol_id: 5) ──
   {
     path: '/farmaceutico',
     component: MainLayout,
-    meta: { requiresAuth: true, rolId: 3 },
+    meta: { requiresAuth: true, rolId: 5 },
     children: [
       {
         path: 'dashboard',
@@ -143,7 +143,7 @@ router.beforeEach((to, from, next) => {
     const dashboards = {
       1: '/admin/dashboard',
       2: '/medico/dashboard',
-      3: '/farmaceutico/dashboard',
+      5: '/farmaceutico/dashboard',
       4: '/paciente/dashboard',
     };
     return next(dashboards[rolId] || '/login');

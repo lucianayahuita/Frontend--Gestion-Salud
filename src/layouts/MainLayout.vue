@@ -155,14 +155,17 @@
 
       <!-- Logout -->
       <div class="sidebar-footer">
-        <button class="logout-btn" @click="logout">
+        <!-- ✅ Botón deshabilitado mientras se procesa el logout -->
+        <button class="logout-btn" @click="logout" :disabled="loggingOut">
           <span class="nav-icon">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"
                 stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </span>
-          <span class="nav-label" v-if="!sidebarCollapsed">Cerrar Sesión</span>
+          <span class="nav-label" v-if="!sidebarCollapsed">
+            {{ loggingOut ? 'Cerrando...' : 'Cerrar Sesión' }}
+          </span>
         </button>
       </div>
     </aside>
@@ -194,16 +197,17 @@
 
 <script>
 import { useAuthStore } from '../store/auth.js';
+import api from '../api/axios.js'; // ✅ Importa axios para llamar a /api/logout
 
 export default {
   name: 'MainLayout',
   data() {
     return {
       sidebarCollapsed: false,
+      loggingOut: false, // ✅ Evita doble clic durante el proceso
     };
   },
   computed: {
-    // ✅ Usa rol_id directamente para comparar
     rolId() {
       const authStore = useAuthStore();
       return authStore.user?.rol_id || null;
@@ -245,12 +249,11 @@ export default {
     currentPageTitle() {
       const titles = {
         '/admin/dashboard': 'Dashboard',
-        '/admin/gestion-pacientes': 'Gestión de Pacientes', // Nombre actualizado
-        '/admin/gestion-medicos': 'Gestión de Médicos',     // Nombre actualizado
+        '/admin/gestion-pacientes': 'Gestión de Pacientes',
+        '/admin/gestion-medicos': 'Gestión de Médicos',
         '/admin/gestion-administradores': 'Gestión de Admins',
         '/admin/gestion-farmaceuticos': 'Gestión Farmacéutica',
         '/admin/reportes': 'Reportes',
-        // ... los demás se mantienen igual
       };
       return titles[this.$route?.path] || 'Panel';
     },
@@ -261,14 +264,27 @@ export default {
     }
   },
   methods: {
-    logout() {
-      const authStore = useAuthStore();
-      authStore.logout();
-      this.$router.push('/login');
+    // ✅ Ahora es async y llama a POST /api/logout antes de limpiar el estado
+    async logout() {
+      if (this.loggingOut) return;
+      this.loggingOut = true;
+
+      try {
+        await api.post('/logout');
+      } catch (err) {
+        // Si el token ya expiró o hay error de red, igual cerramos sesión localmente
+        console.warn('Error al cerrar sesión en el servidor:', err.message);
+      } finally {
+        const authStore = useAuthStore();
+        authStore.logout();           // Limpia user, token y localStorage
+        this.$router.push('/login');  // Redirige al login
+        this.loggingOut = false;
+      }
     }
   }
 };
 </script>
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@500;600;700&display=swap');
 
@@ -499,7 +515,7 @@ export default {
   padding: 9px 10px;
   border-radius: 8px;
   text-decoration: none;
-  color: #3d5260; 
+  color: #3d5260;
   font-size: 13.5px;
   font-weight: 500;
   transition: background 0.22s ease, color 0.22s ease;
@@ -508,8 +524,8 @@ export default {
 }
 
 .nav-item:hover {
-  background: rgba(15, 122, 90, 1); 
-  color: #ffffff;      
+  background: rgba(15, 122, 90, 1);
+  color: #ffffff;
 }
 
 .nav-item--active {
@@ -556,11 +572,14 @@ export default {
   font-weight: 500;
   font-family: 'DM Sans', sans-serif;
   white-space: nowrap;
-  transition: background var(--transition);
+  transition: background var(--transition), opacity var(--transition);
   overflow: hidden;
 }
-.logout-btn:hover {
-  background: #fef2f2;
+.logout-btn:hover { background: #fef2f2; }
+/* ✅ Estilo visual cuando está procesando el logout */
+.logout-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 .logout-btn .nav-icon svg { width: 18px; height: 18px; }
 

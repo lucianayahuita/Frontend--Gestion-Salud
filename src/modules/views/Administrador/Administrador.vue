@@ -32,12 +32,12 @@
         <div class="stat-label">Pacientes registrados</div>
       </div>
 
-      <div class="stat-card stat-card--teal">
+      <div class="stat-card stat-card--purple">
         <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2M12 12v4M10 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="stat-number">{{ cargando ? '...' : conteos.recepcionistas }}</div>
-        <div class="stat-label">Recepcionistas activos</div>
+        <div class="stat-number">{{ cargando ? '...' : conteos.farmaceuticos }}</div>
+        <div class="stat-label">Farmacéuticos activos</div>
       </div>
     </div>
 
@@ -76,7 +76,7 @@
             Registrar Paciente
           </button>
 
-          <button class="action-btn action-btn--soft" @click="$router.push({ name: 'AdminGestionAdmins', query: { nuevo: 'true' } })">
+          <button class="action-btn action-btn--soft" @click="mostrarModalAdmin = true">
             <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             Registrar Administrador
           </button>
@@ -89,20 +89,26 @@
       </div>
     </div>
 
-    <registroPaciente 
-      v-if="mostrarModalPaciente" 
+    <registroPaciente
+      v-if="mostrarModalPaciente"
       @close="mostrarModalPaciente = false"
-      @actualizar="cargarUsuarios" 
+      @actualizar="cargarUsuarios"
     />
   </div>
+  <registrarAdministrador
+    v-if="mostrarModalAdmin"
+    @close="mostrarModalAdmin = false"
+    @actualizar="cargarUsuarios"
+  />
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import api from '@/api/axios.js';
-
 import registroPaciente from '@/modules/administradores/components/registroPaciente.vue';
+import registrarAdministrador from '@/modules/administradores/components/registrarAdministradores.vue'
 
+const mostrarModalAdmin = ref(false)
 const usuarios = ref([]);
 const cargando = ref(false);
 const mostrarModalPaciente = ref(false);
@@ -121,19 +127,17 @@ const cargarUsuarios = async () => {
 
 const conteos = computed(() => {
   const activos = usuarios.value.filter(u => u.deleted_at === null);
-
   return {
-    medicos:          activos.filter(u => u.rol_id === 2).length,
-    administradores:  activos.filter(u => u.rol_id === 1).length,
-    pacientes:        activos.filter(u => u.rol_id === 4).length,
-    recepcionistas:   activos.filter(u => u.rol_id === 3).length,
+    medicos:         activos.filter(u => u.rol_id === 2).length,
+    administradores: activos.filter(u => u.rol_id === 1).length,
+    pacientes:       activos.filter(u => u.rol_id === 4).length,
+    farmaceuticos:   activos.filter(u => u.rol_id === 5).length,
   };
 });
 
-
 const usuariosRecientes = computed(() =>
   usuarios.value
-    .filter(u => u.deleted_at === null) 
+    .filter(u => u.deleted_at === null)
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(0, 5)
 );
@@ -163,7 +167,7 @@ onMounted(cargarUsuarios);
 .stat-card--green  { background: #edfaf5; border-color: #b2e8d6; }
 .stat-card--blue   { background: #eef4fb; border-color: #b8d4f0; }
 .stat-card--yellow { background: #fefaed; border-color: #f0e0a0; }
-.stat-card--teal   { background: #e8f7f3; border-color: #a8dece; }
+.stat-card--purple { background: #f3f0fb; border-color: #c9bff0; }
 
 .stat-icon {
   width: 38px; height: 38px; border-radius: 10px;
@@ -173,7 +177,7 @@ onMounted(cargarUsuarios);
 .stat-card--green  .stat-icon { color: #1D9E75; }
 .stat-card--blue   .stat-icon { color: #2563eb; }
 .stat-card--yellow .stat-icon { color: #b45309; }
-.stat-card--teal   .stat-icon { color: #0d7a63; }
+.stat-card--purple .stat-icon { color: #6d28d9; }
 .stat-icon svg { width: 20px; height: 20px; }
 
 .stat-number { font-family: 'Sora', sans-serif; font-size: 32px; font-weight: 700; color: #1a2b2e; line-height: 1; }

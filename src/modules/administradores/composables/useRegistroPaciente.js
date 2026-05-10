@@ -4,10 +4,11 @@ import { pacienteService } from '../services/pacienteService';
 export function useRegistroPaciente() {
   const cargando = ref(false);
   const errores = ref(null);
-  
+
   const formulario = ref({
     nombre: '',
     apellido: '',
+    segundo_apellido: '',  
     email: '',
     password: '',
     ci: '',
@@ -24,7 +25,7 @@ export function useRegistroPaciente() {
       await pacienteService.registrarPacienteCompleto(formulario.value);
       return true;
     } catch (err) {
-      errores.value = err;
+      errores.value = typeof err === 'string' ? err : 'Error al registrar el paciente';
       return false;
     } finally {
       cargando.value = false;

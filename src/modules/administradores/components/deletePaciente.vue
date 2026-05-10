@@ -10,7 +10,7 @@
 
       <h3 class="modal-title">¿Eliminar paciente?</h3>
       <p class="modal-desc">Esta acción no se puede deshacer. Se eliminará permanentemente a</p>
-      <p class="paciente-nombre">{{ paciente.nombre }} {{ paciente.apellido }}</p>
+      <p class="paciente-nombre">{{ paciente.nombre }} {{ paciente.apellido }} {{ paciente.segundo_apellido }}</p>
 
       <p v-if="errorEliminar" class="error">{{ errorEliminar }}</p>
 
@@ -36,7 +36,7 @@ const emit = defineEmits(['close', 'actualizar'])
 const { eliminando, errorEliminar, ejecutarEliminacionCompleta } = useDeletePaciente()
 
 const confirmar = async () => {
-  const exito = await ejecutarEliminacionCompleta(props.paciente.id, props.paciente.user_id)
+  const exito = await ejecutarEliminacionCompleta(props.paciente.id)
   if (exito) {
     emit('actualizar')
     emit('close')
