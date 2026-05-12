@@ -2,32 +2,27 @@
   <div class="modal-overlay" @click.self="$emit('close')" v-if="paciente">
     
     <div class="modal-content">
-      
-      <div class="modal-header">
-        <h3>Eliminar Paciente</h3>
-        <p class="subtitle">
-          Paciente: {{ paciente.nombre }} {{ paciente.apellido }}
-        </p>
+
+
+      <div class="modal-icon">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
       </div>
 
-      <div class="warning-box">
-        <p>
-          ¿Estás seguro de eliminar a <strong>{{ paciente.nombre }}</strong>?
-        </p>
-        <small>Esta acción no se puede deshacer.</small>
-      </div>
-
-      <div class="actions">
-        <button class="btn-cancelar" @click="$emit('close')">
-          Cancelar
-        </button>
-
-        <button class="btn-eliminar" @click="confirmar" :disabled="eliminando">
-          {{ eliminando ? 'Eliminando...' : 'Eliminar' }}
-        </button>
-      </div>
+      <h3 class="modal-title">¿Eliminar paciente?</h3>
+      <p class="modal-desc">Esta acción no se puede deshacer. Se eliminará permanentemente a</p>
+      <p class="paciente-nombre">{{ paciente.nombre }} {{ paciente.apellido }} {{ paciente.segundo_apellido }}</p>
 
       <p v-if="errorEliminar" class="error">{{ errorEliminar }}</p>
+
+      <div class="btns">
+        <button class="btn-cancelar" @click="$emit('close')">Cancelar</button>
+        <button class="btn-confirmar" @click="confirmar" :disabled="eliminando">
+          {{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}
+        </button>
+      </div>
+
 
     </div>
 
@@ -45,8 +40,7 @@ const emit = defineEmits(['close', 'actualizar'])
 const { eliminando, errorEliminar, ejecutarEliminacionCompleta } = useDeletePaciente()
 
 const confirmar = async () => {
-  // OJO: Verifica si tu objeto tiene user_id o id_usuario
-  const exito = await ejecutarEliminacionCompleta(props.paciente.id, props.paciente.user_id)
+  const exito = await ejecutarEliminacionCompleta(props.paciente.id)
   if (exito) {
     emit('actualizar')
     emit('close')
@@ -61,7 +55,8 @@ const confirmar = async () => {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -70,68 +65,79 @@ const confirmar = async () => {
 
 .modal-content {
   background: white;
-  padding: 24px;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-  font-family: var(--font-family);
+  padding: 36px 32px;
+  border-radius: 20px;
+  width: 420px;
+  max-width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  text-align: center;
 }
 
-.modal-header {
+.modal-icon {
+  display: flex;
+  justify-content: center;
   margin-bottom: 16px;
 }
 
-.subtitle {
-  color: #666;
-  font-size: 0.9rem;
-  margin-top: 4px;
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a2b2e;
+  margin: 0 0 8px;
 }
 
-.warning-box {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  color: #991b1b;
+.modal-desc {
+  font-size: 14px;
+  color: #5a7a80;
+  margin: 0 0 4px;
 }
 
-.actions {
+.paciente-nombre {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ef4444;
+  margin: 0 0 24px;
+}
+
+.btns {
   display: flex;
-  justify-content: center;
   gap: 12px;
-  margin-top: 24px;
+  justify-content: center;
 }
 
 .btn-cancelar {
-  padding: 10px 16px;
-  background: #f3f4f6;
-  color: #4b5563;
+  background: #f4f8f7;
+  color: #5a7a80;
   border: none;
+  padding: 11px 28px;
   border-radius: 8px;
+  font-size: 14px;
   cursor: pointer;
+  transition: background 0.2s;
 }
+.btn-cancelar:hover { background: #e0eeea; }
 
-.btn-eliminar {
+.btn-confirmar {
   background: #ef4444;
   color: white;
   border: none;
-  padding: 10px 24px;
+  padding: 11px 28px;
   border-radius: 8px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-}
 
-.btn-eliminar:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
+.btn-confirmar:hover { background: #dc2626; }
+.btn-confirmar:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .error {
+  background: #fee2e2;
   color: #dc2626;
+  padding: 8px 12px;
+  border-radius: 8px;
   font-size: 13px;
-  margin-top: 12px;
-  text-align: center;
+  margin: 0 0 16px;
+
 }
 </style>

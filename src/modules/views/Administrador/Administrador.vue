@@ -2,8 +2,11 @@
   <div class="dashboard">
 
     <div class="page-header">
-      <div>
-        <p class="page-sub">Resumen General del Sistema</p>
+      <div class="welcome-card">
+        <div class="welcome-content">
+          <h1 class="welcome-title">¡Hola, {{ nombreUsuario }}! <Hand class="icon-hand" :size="28" :stroke-width="2.5" /> </h1>
+          <p class="page-sub">Resumen General del Sistema</p>
+        </div>
       </div>
     </div>
 
@@ -32,12 +35,12 @@
         <div class="stat-label">Pacientes registrados</div>
       </div>
 
-      <div class="stat-card stat-card--teal">
+      <div class="stat-card stat-card--purple">
         <div class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2M12 12v4M10 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="stat-number">{{ cargando ? '...' : conteos.recepcionistas }}</div>
-        <div class="stat-label">Recepcionistas activos</div>
+        <div class="stat-number">{{ cargando ? '...' : conteos.farmaceuticos }}</div>
+        <div class="stat-label">Farmacéuticos activos</div>
       </div>
     </div>
 
@@ -76,7 +79,7 @@
             Registrar Paciente
           </button>
 
-          <button class="action-btn action-btn--soft" @click="$router.push({ name: 'AdminGestionAdmins', query: { nuevo: 'true' } })">
+          <button class="action-btn action-btn--soft" @click="mostrarModalAdmin = true">
             <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             Registrar Administrador
           </button>
@@ -89,20 +92,29 @@
       </div>
     </div>
 
-    <registroPaciente 
-      v-if="mostrarModalPaciente" 
+    <registroPaciente
+      v-if="mostrarModalPaciente"
       @close="mostrarModalPaciente = false"
-      @actualizar="cargarUsuarios" 
+      @actualizar="cargarUsuarios"
     />
   </div>
+  <registrarAdministrador
+    v-if="mostrarModalAdmin"
+    @close="mostrarModalAdmin = false"
+    @actualizar="cargarUsuarios"
+  />
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { Hand } from 'lucide-vue-next';
 import api from '@/api/axios.js';
-
 import registroPaciente from '@/modules/administradores/components/registroPaciente.vue';
+import registrarAdministrador from '@/modules/administradores/components/registrarAdministradores.vue'
+const nombreUsuario = ref('Administrador'); // Valor por defecto
+const fechaActual = ref('');
 
+const mostrarModalAdmin = ref(false)
 const usuarios = ref([]);
 const cargando = ref(false);
 const mostrarModalPaciente = ref(false);
@@ -121,23 +133,33 @@ const cargarUsuarios = async () => {
 
 const conteos = computed(() => {
   const activos = usuarios.value.filter(u => u.deleted_at === null);
-
   return {
-    medicos:          activos.filter(u => u.rol_id === 2).length,
-    administradores:  activos.filter(u => u.rol_id === 1).length,
-    pacientes:        activos.filter(u => u.rol_id === 4).length,
-    recepcionistas:   activos.filter(u => u.rol_id === 3).length,
+    medicos:         activos.filter(u => u.rol_id === 2).length,
+    administradores: activos.filter(u => u.rol_id === 1).length,
+    pacientes:       activos.filter(u => u.rol_id === 4).length,
+    farmaceuticos:   activos.filter(u => u.rol_id === 5).length,
   };
 });
 
-
 const usuariosRecientes = computed(() =>
   usuarios.value
-    .filter(u => u.deleted_at === null) 
+    .filter(u => u.deleted_at === null)
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(0, 5)
 );
-
+const obtenerDatosSesion = () => {
+  const sesion = JSON.parse(localStorage.getItem('user')); 
+  if (sesion && sesion.name) {
+    nombreUsuario.value = sesion.name.split(' ')[0]; 
+  }
+  
+  const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
+  fechaActual.value = new Intl.DateTimeFormat('es-ES', opciones).format(new Date());
+};
+onMounted(() => {
+  cargarUsuarios();
+  obtenerDatosSesion();
+});
 onMounted(cargarUsuarios);
 </script>
 
@@ -145,9 +167,61 @@ onMounted(cargarUsuarios);
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@600;700&display=swap');
 
 .dashboard { display: flex; flex-direction: column; gap: 22px; font-family: 'DM Sans', sans-serif; }
+/* ── Welcome Card Header ── */
+.page-header {
+  margin-bottom: 8px;
+}
 
-.page-header { display: flex; align-items: flex-end; justify-content: space-between; }
-.page-sub { font-size: 13px; color: #3aa085; font-weight: 600; margin: 0; }
+.welcome-card {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 122, 90, 1);
+  padding: 24px 30px;
+  border-radius: 20px;
+  color: white;
+  box-shadow: 0 10px 25px rgba(26, 43, 46, 0.15);
+}
+
+.welcome-title {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Espacio entre el texto y la mano */
+  font-family: 'Sora', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.icon-hand {
+  color: #fbbf24; /* Un color ámbar/dorado para la mano */
+  animation: wave 2s infinite origin-bottom;
+  transform-origin: bottom right;
+}
+
+/* Animación de saludo */
+@keyframes wave {
+  0% { transform: rotate( 0.0deg) }
+  10% { transform: rotate(14.0deg) }
+  20% { transform: rotate(-8.0deg) }
+  30% { transform: rotate(14.0deg) }
+  40% { transform: rotate(-4.0deg) }
+  50% { transform: rotate(10.0deg) }
+  60% { transform: rotate( 0.0deg) }
+  100% { transform: rotate( 0.0deg) }
+}
+
+/* Ajuste para móviles */
+@media (max-width: 600px) {
+  .welcome-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+  }
+}
+.page-sub { font-size: 13px; color: whitesmoke; font-weight: 600; margin: 0; }
 
 /* ── Stats ── */
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
@@ -163,7 +237,7 @@ onMounted(cargarUsuarios);
 .stat-card--green  { background: #edfaf5; border-color: #b2e8d6; }
 .stat-card--blue   { background: #eef4fb; border-color: #b8d4f0; }
 .stat-card--yellow { background: #fefaed; border-color: #f0e0a0; }
-.stat-card--teal   { background: #e8f7f3; border-color: #a8dece; }
+.stat-card--purple { background: #f3f0fb; border-color: #c9bff0; }
 
 .stat-icon {
   width: 38px; height: 38px; border-radius: 10px;
@@ -173,7 +247,7 @@ onMounted(cargarUsuarios);
 .stat-card--green  .stat-icon { color: #1D9E75; }
 .stat-card--blue   .stat-icon { color: #2563eb; }
 .stat-card--yellow .stat-icon { color: #b45309; }
-.stat-card--teal   .stat-icon { color: #0d7a63; }
+.stat-card--purple .stat-icon { color: #6d28d9; }
 .stat-icon svg { width: 20px; height: 20px; }
 
 .stat-number { font-family: 'Sora', sans-serif; font-size: 32px; font-weight: 700; color: #1a2b2e; line-height: 1; }
