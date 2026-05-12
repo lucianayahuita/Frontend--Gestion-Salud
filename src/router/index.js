@@ -99,12 +99,12 @@ const routes = [
       {
         path: 'citas',
         name: 'PacienteCitas',
-        component: () => import('@/modules/views/Paciente/Paciente.vue')
+        component: () => import('@/modules/pacientes/components/gestionCitas.vue')
       },
       {
         path: 'perfil',
         name: 'PacientePerfil',
-        component: () => import('@/modules/views/Paciente/Paciente.vue')
+        component: () => import('@/modules/pacientes/components/gestionVerMiPerfil.vue')
       }
     ]
   },

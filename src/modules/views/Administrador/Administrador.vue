@@ -2,8 +2,11 @@
   <div class="dashboard">
 
     <div class="page-header">
-      <div>
-        <p class="page-sub">Resumen General del Sistema</p>
+      <div class="welcome-card">
+        <div class="welcome-content">
+          <h1 class="welcome-title">¡Hola, {{ nombreUsuario }}! <Hand class="icon-hand" :size="28" :stroke-width="2.5" /> </h1>
+          <p class="page-sub">Resumen General del Sistema</p>
+        </div>
       </div>
     </div>
 
@@ -104,9 +107,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { Hand } from 'lucide-vue-next';
 import api from '@/api/axios.js';
 import registroPaciente from '@/modules/administradores/components/registroPaciente.vue';
 import registrarAdministrador from '@/modules/administradores/components/registrarAdministradores.vue'
+const nombreUsuario = ref('Administrador'); // Valor por defecto
+const fechaActual = ref('');
 
 const mostrarModalAdmin = ref(false)
 const usuarios = ref([]);
@@ -141,7 +147,19 @@ const usuariosRecientes = computed(() =>
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(0, 5)
 );
-
+const obtenerDatosSesion = () => {
+  const sesion = JSON.parse(localStorage.getItem('user')); 
+  if (sesion && sesion.name) {
+    nombreUsuario.value = sesion.name.split(' ')[0]; 
+  }
+  
+  const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
+  fechaActual.value = new Intl.DateTimeFormat('es-ES', opciones).format(new Date());
+};
+onMounted(() => {
+  cargarUsuarios();
+  obtenerDatosSesion();
+});
 onMounted(cargarUsuarios);
 </script>
 
@@ -149,9 +167,61 @@ onMounted(cargarUsuarios);
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@600;700&display=swap');
 
 .dashboard { display: flex; flex-direction: column; gap: 22px; font-family: 'DM Sans', sans-serif; }
+/* ── Welcome Card Header ── */
+.page-header {
+  margin-bottom: 8px;
+}
 
-.page-header { display: flex; align-items: flex-end; justify-content: space-between; }
-.page-sub { font-size: 13px; color: #3aa085; font-weight: 600; margin: 0; }
+.welcome-card {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(15, 122, 90, 1);
+  padding: 24px 30px;
+  border-radius: 20px;
+  color: white;
+  box-shadow: 0 10px 25px rgba(26, 43, 46, 0.15);
+}
+
+.welcome-title {
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Espacio entre el texto y la mano */
+  font-family: 'Sora', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.icon-hand {
+  color: #fbbf24; /* Un color ámbar/dorado para la mano */
+  animation: wave 2s infinite origin-bottom;
+  transform-origin: bottom right;
+}
+
+/* Animación de saludo */
+@keyframes wave {
+  0% { transform: rotate( 0.0deg) }
+  10% { transform: rotate(14.0deg) }
+  20% { transform: rotate(-8.0deg) }
+  30% { transform: rotate(14.0deg) }
+  40% { transform: rotate(-4.0deg) }
+  50% { transform: rotate(10.0deg) }
+  60% { transform: rotate( 0.0deg) }
+  100% { transform: rotate( 0.0deg) }
+}
+
+/* Ajuste para móviles */
+@media (max-width: 600px) {
+  .welcome-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+  }
+}
+.page-sub { font-size: 13px; color: whitesmoke; font-weight: 600; margin: 0; }
 
 /* ── Stats ── */
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }

@@ -1,27 +1,22 @@
 <template>
   <div class="main-layout">
-    <!-- Sidebar -->
     <aside class="sidebar" :class="{ collapsed: sidebarCollapsed }">
-      <!-- Logo & Brand -->
       <div class="sidebar-header">
         <div class="brand-icon">
-          <div class="brand-icon">
-            <img src="@/assets/gestion-salud-logo.png" alt="Logo Gestión Salud" />
-          </div>
+          <img src="@/assets/gestion-salud-logo.png" alt="Logo Gestión Salud" />
         </div>
         <div class="brand-text" v-if="!sidebarCollapsed">
           <span class="brand-name">Gestión</span>
           <span class="brand-sub">Salud</span>
         </div>
         <button class="collapse-btn" @click="sidebarCollapsed = !sidebarCollapsed">
-          <svg viewBox="0 0 24 24" fill="none">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path :d="sidebarCollapsed ? 'M9 18l6-6-6-6' : 'M15 18l-6-6 6-6'"
               stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </button>
       </div>
 
-      <!-- User Badge -->
       <div class="user-badge" v-if="!sidebarCollapsed">
         <div class="user-avatar">{{ userInitial }}</div>
         <div class="user-info">
@@ -31,14 +26,12 @@
       </div>
       <div class="user-avatar-sm" v-else>{{ userInitial }}</div>
 
-      <!-- Navigation -->
       <nav class="sidebar-nav">
         <div class="nav-section-label" v-if="!sidebarCollapsed">Principal</div>
 
-        <!-- Dashboard siempre visible -->
         <router-link :to="dashboardPath" class="nav-item" active-class="nav-item--active">
           <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
               <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
               <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/>
@@ -48,45 +41,60 @@
           <span class="nav-label" v-if="!sidebarCollapsed">Dashboard</span>
         </router-link>
 
-        <!-- ── Administrador (rol_id: 1) ── -->
+        <!-- Administrador -->
         <template v-if="rolId === 1">
           <div class="nav-section-label" v-if="!sidebarCollapsed">Administración</div>
 
           <router-link :to="{ name: 'AdminPacientes' }" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M3 20c0-3.3 2.7-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M21 20c0-3.3-2.7-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M3 20c0-3.3 2.7-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="17" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M21 20c0-3.3-2.7-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Pacientes</span>
           </router-link>
 
           <router-link :to="{ name: 'AdminMedicos' }" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16" stroke="currentColor" stroke-width="1.8"/><path d="M12 11V7M10 9h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="9" y="14" width="6" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M12 11V7M10 9h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <rect x="9" y="14" width="6" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/>
+              </svg>
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Médicos</span>
           </router-link>
 
           <router-link :to="{ name: 'AdminGestionAdmins' }" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"
+                  stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Administradores</span>
           </router-link>
 
           <router-link :to="{ name: 'AdminFarmaceuticos' }" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Farmacéuticos</span>
           </router-link>
         </template>
 
-        <!-- ── Médico (rol_id: 2) ── -->
+        <!-- Médico -->
         <template v-if="rolId === 2">
           <div class="nav-section-label" v-if="!sidebarCollapsed">Gestión</div>
           <router-link to="/medico/pacientes" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
                 <path d="M3 20c0-3.3 2.7-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                 <circle cx="17" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
@@ -97,7 +105,7 @@
           </router-link>
           <router-link to="/medico/citas" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
                 <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
               </svg>
@@ -106,44 +114,21 @@
           </router-link>
         </template>
 
-        <!-- ── Recepcionista (rol_id: 3) ── -->
-        <template v-if="rolId === 3">
-          <div class="nav-section-label" v-if="!sidebarCollapsed">Gestión</div>
-          <router-link to="/recepcionista/citas" class="nav-item" active-class="nav-item--active">
-            <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
-            </span>
-            <span class="nav-label" v-if="!sidebarCollapsed">Citas</span>
-          </router-link>
-          <router-link to="/recepcionista/pacientes" class="nav-item" active-class="nav-item--active">
-            <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
-            </span>
-            <span class="nav-label" v-if="!sidebarCollapsed">Pacientes</span>
-          </router-link>
-        </template>
-
-        <!-- ── Paciente (rol_id: 4) ── -->
+        <!-- Paciente -->
         <template v-if="rolId === 4">
           <div class="nav-section-label" v-if="!sidebarCollapsed">Mi Espacio</div>
           <router-link to="/paciente/citas" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
                 <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
               </svg>
             </span>
-            <span class="nav-label" v-if="!sidebarCollapsed">Mis Citas</span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Programar una cita</span>
           </router-link>
           <router-link to="/paciente/perfil" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24" fill="none">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
                 <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
               </svg>
@@ -151,14 +136,49 @@
             <span class="nav-label" v-if="!sidebarCollapsed">Mi Perfil</span>
           </router-link>
         </template>
+
+        <!-- Farmacéutico -->
+        <template v-if="rolId === 5">
+          <div class="nav-section-label" v-if="!sidebarCollapsed">Farmacia</div>
+          <router-link to="/farmacia/inventario" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-14v4m0 0l-8-4m8 4l8-4"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Inventario</span>
+          </router-link>
+          <router-link to="/farmacia/recetas" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Recetas</span>
+          </router-link>
+        </template>
       </nav>
 
-      <!-- Logout -->
+      <!-- ── Footer ── -->
       <div class="sidebar-footer">
-        <!-- ✅ Botón deshabilitado mientras se procesa el logout -->
-        <button class="logout-btn" @click="logout" :disabled="loggingOut">
+        <!-- Botón cambiar contraseña -->
+        <button class="change-pwd-btn" @click="showChangePassword = true" :title="sidebarCollapsed ? 'Cambiar contraseña' : ''">
           <span class="nav-icon">
-            <svg viewBox="0 0 24 24" fill="none">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M8 11V7a4 4 0 018 0v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="nav-label" v-if="!sidebarCollapsed">Cambiar Contraseña</span>
+        </button>
+
+        <!-- Botón cerrar sesión -->
+        <button class="logout-btn" @click="logout" :disabled="loggingOut" :title="sidebarCollapsed ? 'Cerrar sesión' : ''">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"
                 stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -170,7 +190,7 @@
       </div>
     </aside>
 
-    <!-- Main Content -->
+    <!-- ── Layout body ── -->
     <div class="layout-body">
       <header class="topbar">
         <div class="topbar-left">
@@ -192,19 +212,28 @@
         <router-view />
       </main>
     </div>
+
+    <!-- ── Modal Cambiar Contraseña ── -->
+    <CambiarContrasena
+      v-if="showChangePassword"
+      @close="showChangePassword = false"
+    />
   </div>
 </template>
 
 <script>
 import { useAuthStore } from '../store/auth.js';
-import api from '../api/axios.js'; // ✅ Importa axios para llamar a /api/logout
+import api from '../api/axios.js';
+import CambiarContrasena from '../components/CambiarContrasena.vue';
 
 export default {
   name: 'MainLayout',
+  components: { CambiarContrasena },
   data() {
     return {
       sidebarCollapsed: false,
-      loggingOut: false, // ✅ Evita doble clic durante el proceso
+      loggingOut: false,
+      showChangePassword: false,
     };
   },
   computed: {
@@ -220,30 +249,15 @@ export default {
       return this.userName.charAt(0).toUpperCase();
     },
     roleLabel() {
-      const labels = {
-        1: 'Administrador',
-        2: 'Médico',
-        3: 'Recepcionista',
-        4: 'Paciente',
-      };
+      const labels = { 1: 'Administrador', 2: 'Médico', 4: 'Paciente', 5: 'Farmacéutico' };
       return labels[this.rolId] || 'Usuario';
     },
     roleClass() {
-      const classes = {
-        1: 'administrador',
-        2: 'medico',
-        3: 'recepcionista',
-        4: 'paciente',
-      };
+      const classes = { 1: 'administrador', 2: 'medico', 4: 'paciente', 5: 'farmaceutico' };
       return classes[this.rolId] || 'guest';
     },
     dashboardPath() {
-      const paths = {
-        1: '/admin/dashboard',
-        2: '/medico/dashboard',
-        3: '/recepcionista/dashboard',
-        4: '/paciente/dashboard',
-      };
+      const paths = { 1: '/admin/dashboard', 2: '/medico/dashboard', 4: '/paciente/dashboard', 5: '/farmacia/dashboard' };
       return paths[this.rolId] || '/login';
     },
     currentPageTitle() {
@@ -251,9 +265,11 @@ export default {
         '/admin/dashboard': 'Dashboard',
         '/admin/gestion-pacientes': 'Gestión de Pacientes',
         '/admin/gestion-medicos': 'Gestión de Médicos',
-        '/admin/gestion-administradores': 'Gestión de Admins',
+        '/admin/gestion-administradores': 'Gestión de Administradores',
         '/admin/gestion-farmaceuticos': 'Gestión Farmacéutica',
-        '/admin/reportes': 'Reportes',
+        '/farmacia/dashboard': 'Dashboard Farmacia',
+        '/farmacia/inventario': 'Inventario de Medicamentos',
+        '/farmacia/recetas': 'Recetas Médicas',
       };
       return titles[this.$route?.path] || 'Panel';
     },
@@ -264,20 +280,17 @@ export default {
     }
   },
   methods: {
-    // ✅ Ahora es async y llama a POST /api/logout antes de limpiar el estado
     async logout() {
       if (this.loggingOut) return;
       this.loggingOut = true;
-
       try {
         await api.post('/logout');
       } catch (err) {
-        // Si el token ya expiró o hay error de red, igual cerramos sesión localmente
         console.warn('Error al cerrar sesión en el servidor:', err.message);
       } finally {
         const authStore = useAuthStore();
-        authStore.logout();           // Limpia user, token y localStorage
-        this.$router.push('/login');  // Redirige al login
+        authStore.logout();
+        this.$router.push('/login');
         this.loggingOut = false;
       }
     }
@@ -288,73 +301,36 @@ export default {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@500;600;700&display=swap');
 
-/* ── Variables ── */
-:root {
-  --sidebar-w: 240px;
-  --sidebar-w-sm: 70px;
-  --topbar-h: 64px;
+/* ── NO usar :root con var() en scoped — usar hex directos ── */
 
-  --green-50: #f0faf7;
-  --green-100: #d6f5eb;
-  --green-400: #4EB89D;
-  --green-500: #3aa085;
-  --green-600: #2e8a72;
-
-  --teal-light: #e8f7f3;
-  --yellow-soft: #fef9ec;
-  --blue-soft: #eef4fb;
-
-  --text-heading: #1a2b2e;
-  --text-body: #3d5260;
-  --text-muted: #7a9aaa;
-
-  --bg-page: #f4f8f7;
-  --bg-sidebar: #ffffff;
-  --bg-topbar: #ffffff;
-
-  --shadow-sm: 0 1px 4px rgba(30,60,70,0.07);
-  --shadow-md: 0 4px 16px rgba(30,60,70,0.1);
-
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-
-  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* ── Layout shell ── */
 .main-layout {
   display: flex;
   height: 100vh;
-  background: rgba(255,255,255,0.65);
+  background: #f4f8f7;
   font-family: 'DM Sans', sans-serif;
-  color: var(--text-body);
+  color: #3d5260;
   overflow: hidden;
 }
 
 /* ── Sidebar ── */
 .sidebar {
-  width: var(--sidebar-w);
-  min-width: var(--sidebar-w);
-  background: var(--bg-sidebar);
+  width: 240px;
+  min-width: 240px;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #e8f0ed;
-  box-shadow: var(--shadow-sm);
-  transition: width var(--transition), min-width var(--transition);
+  box-shadow: 0 1px 4px rgba(30,60,70,0.07);
+  transition: width 0.22s cubic-bezier(0.4,0,0.2,1), min-width 0.22s cubic-bezier(0.4,0,0.2,1);
   overflow: hidden;
   z-index: 100;
 }
-
 .sidebar.collapsed {
-  width: var(--sidebar-w-sm);
-  min-width: var(--sidebar-w-sm);
+  width: 70px;
+  min-width: 70px;
 }
 
 /* Header */
@@ -365,14 +341,12 @@ export default {
   padding: 20px 14px 16px;
   border-bottom: 1px solid #eef3f1;
 }
-
 .brand-icon img {
   width: 38px;
   height: 38px;
   object-fit: contain;
   flex-shrink: 0;
 }
-
 .brand-text {
   display: flex;
   flex-direction: column;
@@ -384,19 +358,18 @@ export default {
   font-family: 'Sora', sans-serif;
   font-size: 15px;
   font-weight: 700;
-  color: var(--text-heading);
+  color: #1a2b2e;
 }
 .brand-sub {
   font-size: 11px;
   font-weight: 500;
-  color: var(--green-400);
+  color: #4EB89D;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-
 .collapse-btn {
   margin-left: auto;
-  background: var(--green-50);
+  background: #f0faf7;
   border: none;
   cursor: pointer;
   width: 28px;
@@ -406,11 +379,11 @@ export default {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--green-500);
-  transition: background var(--transition);
+  color: #3aa085;
+  transition: background 0.22s ease;
 }
-.collapse-btn:hover { background: var(--green-100); }
-.collapse-btn svg { width: 16px; height: 16px; }
+.collapse-btn:hover { background: #d6f5eb; }
+.collapse-btn svg { width: 16px; height: 16px; stroke: #3aa085; }
 
 /* User badge */
 .user-badge {
@@ -419,16 +392,15 @@ export default {
   gap: 10px;
   margin: 12px 14px;
   padding: 10px 12px;
-  background: var(--green-50);
-  border-radius: var(--radius-md);
+  background: #f0faf7;
+  border-radius: 12px;
   overflow: hidden;
 }
-
 .user-avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--green-400);
+  background: #4EB89D;
   color: #fff;
   font-family: 'Sora', sans-serif;
   font-weight: 700;
@@ -438,12 +410,11 @@ export default {
   justify-content: center;
   flex-shrink: 0;
 }
-
 .user-avatar-sm {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--green-400);
+  background: #4EB89D;
   color: #fff;
   font-family: 'Sora', sans-serif;
   font-weight: 700;
@@ -452,9 +423,7 @@ export default {
   align-items: center;
   justify-content: center;
   margin: 12px auto;
-  flex-shrink: 0;
 }
-
 .user-info {
   overflow: hidden;
   display: flex;
@@ -464,7 +433,7 @@ export default {
 .user-name {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-heading);
+  color: #1a2b2e;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -493,7 +462,6 @@ export default {
   flex-direction: column;
   gap: 2px;
 }
-
 .sidebar-nav::-webkit-scrollbar { width: 4px; }
 .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
 .sidebar-nav::-webkit-scrollbar-thumb { background: #d0e8e0; border-radius: 4px; }
@@ -503,11 +471,11 @@ export default {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: #7a9aaa;
   padding: 10px 10px 4px;
 }
 
-/* ── Nav ── */
+/* ── Nav items — color hardcodeado para que scoped funcione ── */
 .nav-item {
   display: flex;
   align-items: center;
@@ -522,28 +490,37 @@ export default {
   white-space: nowrap;
   overflow: hidden;
 }
-
 .nav-item:hover {
-  background: rgba(15, 122, 90, 1);
+  background: #0f7a5a;
   color: #ffffff;
 }
-
+.nav-item:hover .nav-icon svg {
+  stroke: #ffffff;
+}
 .nav-item--active {
   background: #4EB89D !important;
   color: #ffffff !important;
   font-weight: 600;
   box-shadow: 0 2px 10px rgba(78,184,157,0.3);
 }
+.nav-item--active .nav-icon svg {
+  stroke: #ffffff !important;
+}
 
+/* Íconos — stroke explícito heredado del padre */
 .nav-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  line-height: 0;
 }
 .nav-icon svg {
   width: 18px;
   height: 18px;
+  stroke: #3d5260;        /* color base mismo que .nav-item */
+  transition: stroke 0.22s ease;
+  flex-shrink: 0;
 }
 
 .nav-label {
@@ -551,19 +528,45 @@ export default {
   text-overflow: ellipsis;
 }
 
-/* Footer / Logout */
+/* ── Footer ── */
 .sidebar-footer {
   padding: 10px;
   border-top: 1px solid #eef3f1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
+/* Botón cambiar contraseña */
+.change-pwd-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: #2e8a72;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+  transition: background 0.22s ease;
+  overflow: hidden;
+}
+.change-pwd-btn:hover { background: #f0faf7; }
+.change-pwd-btn .nav-icon svg { stroke: #2e8a72; }
+
+/* Botón cerrar sesión */
 .logout-btn {
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
   padding: 9px 10px;
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   border: none;
   cursor: pointer;
   background: transparent;
@@ -572,16 +575,12 @@ export default {
   font-weight: 500;
   font-family: 'DM Sans', sans-serif;
   white-space: nowrap;
-  transition: background var(--transition), opacity var(--transition);
+  transition: background 0.22s ease, opacity 0.22s ease;
   overflow: hidden;
 }
 .logout-btn:hover { background: #fef2f2; }
-/* ✅ Estilo visual cuando está procesando el logout */
-.logout-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.logout-btn .nav-icon svg { width: 18px; height: 18px; }
+.logout-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.logout-btn .nav-icon svg { stroke: #e05757; }
 
 /* ── Layout body ── */
 .layout-body {
@@ -594,53 +593,47 @@ export default {
 
 /* ── Topbar ── */
 .topbar {
-  height: var(--topbar-h);
-  background: var(--bg-topbar);
+  height: 64px;
+  background: #ffffff;
   border-bottom: 1px solid #e8f0ed;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 28px;
   flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 4px rgba(30,60,70,0.07);
 }
-
 .page-title {
   font-family: 'Sora', sans-serif;
   font-size: 18px;
   font-weight: 700;
-  color: var(--text-heading);
+  color: #1a2b2e;
 }
-
 .topbar-right {
   display: flex;
   align-items: center;
   gap: 20px;
 }
-
 .topbar-date {
   font-size: 12px;
-  color: var(--text-muted);
+  color: #7a9aaa;
   font-weight: 400;
   text-transform: capitalize;
 }
-
 .topbar-user {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: var(--green-50);
-  border: 1.5px solid var(--green-100);
+  background: #f0faf7;
+  border: 1.5px solid #d6f5eb;
   border-radius: 40px;
   padding: 6px 14px 6px 6px;
-  cursor: default;
 }
-
 .topbar-avatar {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--green-400);
+  background: #4EB89D;
   color: #fff;
   font-family: 'Sora', sans-serif;
   font-weight: 700;
@@ -649,31 +642,17 @@ export default {
   align-items: center;
   justify-content: center;
 }
-
-.topbar-user-info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-.topbar-user-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-heading);
-}
-.topbar-user-role {
-  font-size: 11px;
-  color: var(--green-500);
-  font-weight: 500;
-}
+.topbar-user-info { display: flex; flex-direction: column; line-height: 1.2; }
+.topbar-user-name { font-size: 13px; font-weight: 600; color: #1a2b2e; }
+.topbar-user-role { font-size: 11px; color: #3aa085; font-weight: 500; }
 
 /* ── Content ── */
 .content {
   flex: 1;
   overflow-y: auto;
   padding: 24px 28px;
-  background: var(--bg-page);
+  background: #f4f8f7;
 }
-
 .content::-webkit-scrollbar { width: 6px; }
 .content::-webkit-scrollbar-track { background: transparent; }
 .content::-webkit-scrollbar-thumb { background: #c5ddd7; border-radius: 6px; }
