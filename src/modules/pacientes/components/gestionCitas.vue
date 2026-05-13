@@ -1,17 +1,20 @@
 <template>
   <div class="agendar-page">
-
     <div class="agendar-grid">
-
-      <!-- ── Panel izquierdo: formulario de búsqueda ── -->
-      <div class="panel-form">
-        <h2 class="panel-title">Agenda una cita</h2>
+      <div class="panel-form" :class="{ 'panel-form--editing': modoEdicion }">
+        <h2 class="panel-title">
+          {{ modoEdicion ? 'Reprogramar Cita' : 'Agenda una cita' }}
+        </h2>
         <div class="divider-line" />
+
+        <div v-if="modoEdicion" class="edit-badge">
+          Estás cambiando tu cita con el Dr. {{ medicoNombreEdicion }}
+        </div>
 
         <div class="field-group">
           <label class="field-label">Médico</label>
           <div class="select-wrapper">
-            <select v-model="medicoId" :disabled="cargandoMedicos">
+            <select v-model="medicoId" :disabled="cargandoMedicos || modoEdicion">
               <option :value="null" disabled>
                 {{ cargandoMedicos ? 'Cargando...' : 'Selecciona un médico' }}
               </option>
@@ -41,11 +44,17 @@
           <span v-if="cargandoHorarios" class="spinner" />
           {{ cargandoHorarios ? 'Buscando...' : 'Buscar' }}
         </button>
+
+        <button 
+          v-if="modoEdicion" 
+          @click="cancelarEdicion" 
+          class="btn-cancelar-repro"
+        >
+          Cancelar Reprogramación
+        </button>
       </div>
 
-      <!-- ── Panel derecho: horarios disponibles ── -->
       <div class="panel-horarios">
-
         <div v-if="!disponibilidad.length && !cargandoHorarios" class="horarios-empty">
           <CalendarSearch :size="40" class="empty-icon" />
           <p>Selecciona un médico y una fecha para ver los horarios disponibles</p>
@@ -79,93 +88,126 @@
           <button
             v-if="disponibilidad.length > 0"
             class="btn-agendar"
-            @click="confirmarCita"
-            :disabled="!horaSeleccionada || agendando"
+            :class="{ 'btn-agendar--repro': modoEdicion }"
+            @click="ejecutarAccionPrincipal"
+            :disabled="!horaSeleccionada || agendando || reprogramando"
           >
-            {{ agendando ? 'Agendando...' : 'Agendar Nueva Cita' }}
+            <span v-if="agendando || reprogramando" class="spinner" />
+            {{ modoEdicion ? 'Confirmar Reprogramación' : 'Agendar Nueva Cita' }}
           </button>
         </template>
+      </div> 
+    </div> 
 
-      </div>
+    <div v-if="error || errorReprogramar" class="alert alert--error">
+      {{ error || errorReprogramar }}
     </div>
-
-    <!-- Mensajes -->
-    <div v-if="error" class="alert alert--error">{{ error }}</div>
     <div v-if="exito" class="alert alert--success">
-      ¡Cita agendada correctamente para el {{ fechaFormateada }} 
+      <span v-if="modoEdicion">La cita ha sido reprogramada exitosamente.</span>
+      <span v-else>¡Cita agendada correctamente para la fecha seleccionada!</span>
     </div>
+
     <div class="panel-cita-actual">
-      <h2 class="panel-title">Mi Cita Programada</h2>
+      <h2 class="panel-title">Mis Citas Programadas</h2>
       <div class="divider-line" />
 
-      <div v-if="cargandoCita" class="horarios-empty">
-        <span class="spinner spinner--green" />
-        <p>Buscando tu información...</p>
+      <div v-if="exitoCancelacion" class="alert alert--success" style="margin-bottom: 20px;">
+        La cita ha sido cancelada exitosamente.
       </div>
 
-      <div v-else-if="cita" class="cita-card-horizontal">
-        <div class="cita-info-detalle">
-          <div class="icon-bg">
-            <CalendarSearch :size="24" />
+      <div v-if="cargandoCitas" class="horarios-empty">
+        <span class="spinner spinner--green" />
+        <p>Buscando tus citas...</p>
+      </div>
+
+      <div v-else-if="listaCitas.length > 0" class="citas-lista-container">
+        <div v-for="item in listaCitas" :key="item.id" class="cita-card-horizontal m-bottom" style="margin-bottom: 15px;">
+          <div class="cita-info-detalle">
+            <div class="icon-bg">
+              <CalendarSearch :size="24" />
+            </div>
+            <div class="textos">
+              <p class="medico-name">Dr. {{ item.medico.name }}</p>
+              <p class="cita-meta">
+                {{ item.fecha }} • {{ item.hora.substring(0, 5) }} hrs
+              </p>
+              <span class="estado-tag" :class="item.estado.toLowerCase()">
+                {{ item.estado }}
+              </span>
+            </div>
           </div>
-          <div class="textos">
-            <p class="medico-name">Dr. {{ cita.medico.name }}</p>
-            <p class="cita-meta">
-              {{ cita.fecha }} • {{ cita.hora.substring(0, 5) }} hrs
-            </p>
-            <span class="estado-tag">{{ cita.estado }}</span>
+          
+          <div class="cita-actions">
+            <button class="btn-repro" @click="handleReprogramar(item)">
+              Reprogramar
+            </button>
+            <button class="btn-cancel" @click="prepararCancelacion(item.id)">
+              Cancelar
+            </button>
           </div>
-        </div>
-        
-        <div class="cita-actions">
-          <button class="btn-repro" @click="handleReprogramar">
-            Reprogramar
-          </button>
-          <button 
-            class="btn-cancel" 
-            @click="handleCancelar(cita.id)"
-            :disabled="estaCancelando"
-          >
-            <span v-if="estaCancelando" class="spinner spinner--white" />
-            {{ estaCancelando ? 'Cancelando...' : 'Cancelar Cita' }}
-          </button>
         </div>
       </div>
 
       <div v-else class="horarios-empty no-cita-box">
-        <p>No tienes citas pendientes para este paciente.</p>
+        <p>No tienes citas programadas actualmente.</p>
+      </div>
+    </div> 
+  </div> 
+
+  <Teleport to="body">
+    <div v-if="mostrarModalConfirmar" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h2 class="modal-title">¿Confirmar cancelación?</h2>
+        </div>
+        <div class="modal-body">
+          <p>Esta acción no se puede deshacer. La cita será eliminada de tu historial.</p>
+          <div v-if="errorCancelacion" class="alert alert--error" style="margin-top: 15px; font-size: 13px;">
+            {{ errorCancelacion }}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-ghost" @click="cerrarModal" :disabled="estaCancelando">Regresar</button>
+          <button class="btn-cancel" @click="confirmarCancelacion" :disabled="estaCancelando">
+            <span v-if="estaCancelando" class="spinner spinner--white" />
+            {{ estaCancelando ? 'Cancelando...' : 'Sí, cancelar cita' }}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  </Teleport>
 </template>
-
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { ChevronDown, CalendarSearch } from 'lucide-vue-next'
-import { useAgendarCita } from '../composables/useAgendarCita'
+import api from '@/api/axios.js'
 import { useAuthStore } from '@/store/auth' 
-import { useVerMiCita } from '../composables/useVerMiCita'
+
+// 1. Importación de Composables
+import { useAgendarCita } from '../composables/useAgendarCita'
+import { useVerMisCitas } from '../composables/useVerMisCitas' 
 import { useCancelarCita } from '../composables/useCancelarCita'
+import { useReprogramarCita } from '../composables/useReprogramarCita';
+
 const authStore = useAuthStore()
-// 2. Composables de citas
-const { cita, cargando: cargandoCita, cargarCita } = useVerMiCita()
-const { cancelar, estaCancelando } = useCancelarCita()
 
-onMounted(async () => {
-    if (authStore.user?.id) {
-        await cargarCita(authStore.user.id)
-    }
-})
+const mostrarModalConfirmar = ref(false)
+const citaIdSeleccionada = ref(null)
+const idPacienteActual = ref(null) 
+const exitoCancelacion = ref(false)
 
-const handleCancelar = async (idCita) => {
-    if (confirm("¿Seguro que quieres cancelar tu cita?")) {
-        const ok = await cancelar(idCita) 
-        if (ok) {
-            cita.value = null 
-            alert("Cita cancelada correctamente")
-        }
-    }
-}
+const modoEdicion = ref(false);
+const citaIdParaReprogramar = ref(null);
+const { 
+  citas: listaCitas, 
+  cargando: cargandoCitas, 
+  cargarCitas 
+} = useVerMisCitas()
+
+const { cancelar, estaCancelando, errorCancelacion } = useCancelarCita()
+
+const { reprogramar, reprogramando } = useReprogramarCita();
+
 const {
   medicos,
   disponibilidad,
@@ -188,10 +230,105 @@ const {
 onMounted(async () => {
   cargarMedicos();
   
-  if (authStore.user?.id) {
-    await cargarCita(authStore.user.id);
+  try {
+    const resPacientes = await api.get('/pacientes');
+    const miPerfil = resPacientes.data.data.find(p => p.user_id === authStore.user.id);
+    
+    if (miPerfil) {
+      idPacienteActual.value = miPerfil.id; 
+      await cargarCitas(miPerfil.id);
+    } else {
+      console.error("No se encontró un perfil de paciente para este usuario");
+    }
+  } catch (error) {
+    console.error("Error al obtener perfil:", error);
   }
 });
+
+// 3. Funciones de Cancelación
+const prepararCancelacion = (id) => {
+  citaIdSeleccionada.value = id
+  mostrarModalConfirmar.value = true
+}
+
+const cerrarModal = () => {
+  mostrarModalConfirmar.value = false
+  citaIdSeleccionada.value = null
+  if (errorCancelacion) errorCancelacion.value = null
+}
+
+const confirmarCancelacion = async () => {
+  if (!citaIdSeleccionada.value) return
+  
+  const ok = await cancelar(citaIdSeleccionada.value)
+  if (ok) {
+    mostrarModalConfirmar.value = false
+    
+    await nextTick()
+    if (idPacienteActual.value) {
+      await cargarCitas(idPacienteActual.value)
+    }
+    
+    exitoCancelacion.value = true
+    setTimeout(() => {
+      exitoCancelacion.value = false
+    }, 4000)
+
+    citaIdSeleccionada.value = null
+  }
+}
+
+const handleReprogramar = (item) => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  medicoId.value = item.medico.id;
+  fechaSeleccionada.value = item.fecha; 
+  modoEdicion.value = true;
+  citaIdParaReprogramar.value = item.id;
+  horaSeleccionada.value = null;
+};
+
+const ejecutarAccionPrincipal = async () => {
+  error.value = null;
+
+  if (modoEdicion.value) {
+    const datos = {
+      paciente_id: idPacienteActual.value,
+      medico_id: medicoId.value,
+      fecha: fechaSeleccionada.value,
+      hora: horaSeleccionada.value,
+      estado: 'pendiente'
+    };
+
+    const resultado = await reprogramar(citaIdParaReprogramar.value, datos);
+    
+    if (resultado.success) {
+      cancelarEdicion(); 
+      await cargarCitas(idPacienteActual.value);
+      await nextTick();
+      exito.value = "La cita ha sido reprogramada exitosamente.";
+    }
+  } else {
+    const ok = await confirmarCita(); 
+    if (ok) {
+      await cargarCitas(idPacienteActual.value);
+      await nextTick();
+      exito.value = `¡Cita agendada correctamente para el ${fechaFormateada.value}!`;
+    }
+  }
+  if (exito.value) {
+    setTimeout(() => {
+      exito.value = null;
+    }, 5000);
+  }
+};
+const cancelarEdicion = () => {
+  modoEdicion.value = false;
+  citaIdParaReprogramar.value = null;
+  medicoId.value = null;
+  fechaSeleccionada.value = '';
+  horaSeleccionada.value = null;
+  disponibilidad.value = [];
+};
 </script>
 
 <style scoped>
@@ -455,7 +592,125 @@ onMounted(async () => {
   width: 14px;
   height: 14px;
 }
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(26, 43, 46, 0.8); 
+  backdrop-filter: blur(4px); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
 
+.modal-box {
+  background: white;
+  padding: 32px;
+  border-radius: 20px; 
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e0eeea;
+  animation: modalPop 0.3s ease-out;
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-title {
+  font-family: var(--font-work);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a2b2e;
+  margin-bottom: 12px;
+}
+
+.modal-body p {
+  color: #5a7a80;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  font-family: 'Sora', sans-serif;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.btn-ghost {
+  background: #f8fcfb;
+  border: 1.5px solid #e0eeea;
+  color: #5a7a80;
+  padding: 11px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+  background: #f0f9f6;
+  border-color: #cedbd7;
+  color: #1a2b2e;
+}
+
+.modal-footer .btn-cancel {
+  padding: 11px 24px;
+  font-size: 14px;
+}
+
+.modal-body .alert--error {
+  margin-top: 16px;
+  padding: 10px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+.panel-form--editing {
+  border-color: #f39c12 !important; 
+  background-color: #fffaf0;
+}
+
+.edit-badge {
+  background: #f39c12;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.btn-cancelar-repro {
+  width: 100%;
+  margin-top: 10px;
+  background: none;
+  border: 1px solid #d32f2f;
+  color: #d32f2f;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-agendar--repro {
+  background-color: #f39c12 !important;
+}
+
+.btn-agendar--repro:hover {
+  background-color: #e67e22 !important;
+}
 /* Responsive */
 @media (max-width: 768px) {
   .cita-card-horizontal {

@@ -6,11 +6,10 @@ export function useVerMiCita() {
     const cargando = ref(false);
 
     const cargarCita = async (pacienteId) => {
-        if (!pacienteId) return; // Seguridad si el store aún no carga
+        if (!pacienteId) return; 
         cargando.value = true;
         try {
             const res = await getUltimaCita(pacienteId);
-            // Si la respuesta es exitosa y hay citas en el array
             if (res.success && res.data.length > 0) {
                 cita.value = res.data[0]; 
             } else {

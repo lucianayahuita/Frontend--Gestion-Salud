@@ -23,7 +23,6 @@ const routes = [
         name: 'AdminDashboard',
         component: () => import('@/modules/views/Administrador/Administrador.vue')
       },
-      // ─── Rutas de Gestión (Tus nuevos componentes) ───
       {
         path: 'gestion-pacientes',
         name: 'AdminPacientes',
@@ -66,7 +65,7 @@ const routes = [
       {
         path: 'citas',
         name: 'MedicoCitas',
-        component: () => import('@/modules/views/Medico/Medico.vue')
+        component: () => import('@/modules/medicos/components/gestionMisCitasMedico.vue')
       }
     ]
   },
