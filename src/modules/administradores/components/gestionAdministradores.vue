@@ -39,13 +39,13 @@
               </span>
             </td>
             <td class="td-acciones">
-              <button class="btn-accion btn-ver" title="Ver">
+              <button class="btn-accion btn-ver" @click="abrirVer(admin)" title="Ver">
                 <Eye :size="15" />
               </button>
-              <button class="btn-accion btn-editar" title="Editar">
+              <button class="btn-accion btn-editar" @click="abrirEditar(admin)" title="Editar" >
                 <Pencil :size="15" />
               </button>
-              <button class="btn-accion btn-eliminar" title="Eliminar">
+              <button class="btn-accion btn-eliminar" @click="abrirEliminar(admin)" title="Eliminar">
                 <Trash2 :size="15" />
               </button>
             </td>
@@ -60,6 +60,26 @@
       @actualizar="cargarAdmins(); mostrarModal = false"
     />
 
+    <VerAdministradores
+      v-if="mostrarVer && adminSeleccionado"
+      :adminId="adminSeleccionado.id"
+      @close="mostrarVer = false"
+    />
+
+    <UpdateAdministradores
+      v-if="mostrarEditar && adminEditar"
+      :admin="adminEditar"
+      @close="mostrarEditar = false"
+      @actualizar="cargarAdmins(); mostrarEditar = false"
+    />
+
+    <DeleteAdministradores
+      v-if="mostrarEliminar && adminEliminar"
+      :admin="adminEliminar"
+      @close="mostrarEliminar = false"
+      @actualizar="cargarAdmins(); mostrarEliminar = false"
+    />
+
   </div>
 </template>
 
@@ -68,12 +88,21 @@ import { ref, computed, onMounted } from 'vue'
 import { Search, Eye, Pencil, Trash2 } from 'lucide-vue-next'
 import api from '@/api/axios.js'
 import registrarAdministrador from './registrarAdministradores.vue'
+import VerAdministradores from './VerAdministradores.vue'
+import UpdateAdministradores from './UpdateAdministradores.vue'
+import DeleteAdministradores from './DeleteAdministradores.vue'
 
 const administradores = ref([])
 const cargando = ref(false)
 const error = ref(null)
 const busqueda = ref('')
 const mostrarModal = ref(false)
+const mostrarVer = ref(false)
+const adminSeleccionado = ref(null)
+const mostrarEditar = ref(false)
+const adminEditar = ref(null)
+const mostrarEliminar = ref(false)
+const adminEliminar = ref(null)
 
 const cargarAdmins = async () => {
   cargando.value = true
@@ -96,6 +125,22 @@ const administradoresFiltrados = computed(() => {
     a.email.toLowerCase().includes(q)
   )
 })
+
+const abrirVer = (admin) => {
+  adminSeleccionado.value = admin
+  mostrarVer.value = true
+}
+
+const abrirEditar = (admin) => {
+  adminEditar.value = admin
+  mostrarEditar.value = true
+}
+
+const abrirEliminar = (admin) => {
+  adminEliminar.value = admin
+  mostrarEliminar.value = true
+}
+
 
 onMounted(cargarAdmins)
 </script>
