@@ -19,17 +19,17 @@
             <th>Paciente</th>
             <th>C.I</th>
             <th>Edad</th>
-            <th>Teléfono</th>
+            <th>Grupo Sanguíneo</th> <th>Teléfono</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr v-if="cargando">
-            <td colspan="7" class="estado-celda">Cargando...</td>
+            <td colspan="8" class="estado-celda">Cargando...</td> 
           </tr>
           <tr v-else-if="pacientesFiltrados().length === 0">
-            <td colspan="7" class="estado-celda">No hay pacientes</td>
+            <td colspan="8" class="estado-celda">No hay pacientes</td>
           </tr>
           <tr v-for="p in pacientesFiltrados()" :key="p.id" class="fila">
             <td class="td-id">{{ p.id }}</td>
@@ -39,6 +39,13 @@
             </td>
             <td>{{ p.ci }}</td>
             <td>{{ calcularEdad(p.fecha_nacimiento) }} años</td>
+            
+            <td>
+              <span class="badge-sangre">
+                {{ p.tipo_sangre?.nombre || p.tipo_sangre || '-' }}
+              </span>
+            </td>
+
             <td>{{ p.telefono || '-' }}</td>
             <td>
               <span class="badge" :class="p.estado === 'Activo' ? 'badge-activo' : 'badge-inactivo'">
@@ -144,6 +151,15 @@ const abrirEditar = (p) => {
 .td-nombre { font-weight: 600; }
 .segundo-apellido { color: #1a2b2e; }
 .estado-celda { text-align: center; color: #5a7a80; padding: 40px; }
+
+.badge-sangre {
+  background: #f0fdf4;
+  color: #111827;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #dcfce7;
+}
 
 .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
 .badge-activo   { background: #d1fae5; color: #065f46; }

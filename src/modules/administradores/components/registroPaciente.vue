@@ -38,7 +38,6 @@
         <div class="form-section">
           <span class="section-tag">Información Personal</span>
 
-          <!-- Nombres y apellidos en grid de 3 -->
           <div class="grid-3">
             <div class="field-icon">
               <User :size="16" class="icon" />
@@ -65,9 +64,28 @@
             </div>
           </div>
 
-          <div class="field-icon">
-            <Phone :size="16" class="icon" />
-            <input v-model="formulario.telefono" placeholder="Teléfono / Celular" />
+          <div class="grid-2">
+            <div class="field-icon">
+              <Phone :size="16" class="icon" />
+              <input v-model="formulario.telefono" placeholder="Teléfono / Celular" />
+            </div>
+            
+            <div class="field-icon">
+              <Droplet :size="16" class="icon" />
+              <select 
+                v-model="formulario.tipo_sangre_id" 
+                required 
+                class="select-blood"
+                :disabled="cargandoTipos"
+              >
+                <option value="" disabled selected>
+                  {{ cargandoTipos ? 'Cargando grupos...' : 'Tipo de sangre *' }}
+                </option>
+                <option v-for="grupo in listaTiposSangre" :key="grupo.id" :value="grupo.id">
+                  {{ grupo.nombre }}
+                </option>
+              </select>
+            </div>
           </div>
 
           <div class="field-icon">
@@ -81,7 +99,7 @@
           </label>
         </div>
 
-        <p v-if="errores" class="error-banner">{{ errores }}</p>
+        <p v-if="errores && typeof errores === 'string'" class="error-banner">{{ errores }}</p>
 
         <div class="modal-footer">
           <button type="button" class="btn-secondary" @click="$emit('close')">Cancelar</button>
@@ -95,17 +113,51 @@
 </template>
 
 <script setup>
-import { Mail, Lock, User, Users, CreditCard, Calendar, Phone, MapPin } from 'lucide-vue-next';
+import { ref, onMounted } from 'vue';
+import { Mail, Lock, User, Users, CreditCard, Calendar, Phone, MapPin, Droplet } from 'lucide-vue-next';
 import { useRegistroPaciente } from '../composables/useRegistroPaciente';
+import api from '@/api/axios.js';
 
 const emit = defineEmits(['close', 'actualizar']);
 const { formulario, cargando, errores, enviarRegistro } = useRegistroPaciente();
+
+const listaTiposSangre = ref([]);
+const cargandoTipos = ref(false);
+
+const obtenerTiposSangre = async () => {
+  cargandoTipos.value = true;
+  try {
+    const respuesta = await api.get('/tipos-sangre');
+    listaTiposSangre.value = respuesta.data?.data || respuesta.data;
+  } catch (error) {
+    console.error('Error al cargar tipos de sangre de la API:', error);
+    listaTiposSangre.value = [
+      { id: 1, nombre: 'A+' }, { id: 2, nombre: 'A-' },
+      { id: 3, nombre: 'B+' }, { id: 4, nombre: 'B-' },
+      { id: 5, nombre: 'AB+' }, { id: 6, nombre: 'AB-' },
+      { id: 7, nombre: 'O+' }, { id: 8, nombre: 'O-' }
+    ];
+  } finally {
+    cargandoTipos.value = false;
+  }
+};
+
+onMounted(() => {
+  obtenerTiposSangre();
+});
 
 const handleSubmit = async () => {
   const exito = await enviarRegistro();
   if (exito) {
     emit('actualizar');
     emit('close');
+  } else {
+    if (errores.value && typeof errores.value === 'object') {
+      const listaErrores = Object.values(errores.value).flat().join('\n');
+      alert("Error de validación en el servidor:\n\n" + listaErrores);
+    } else {
+      alert(errores.value || 'Ocurrió un inconveniente al procesar el formulario.');
+    }
   }
 };
 </script>
@@ -131,13 +183,24 @@ const handleSubmit = async () => {
 .form-section { margin-bottom: 20px; }
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; } /* ✅ nuevo */
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 
-input {
+input, .select-blood {
   width: 100%; padding: 12px; border: 1.5px solid #e0eeea; border-radius: 8px;
   font-family: inherit; transition: border-color 0.2s; margin-bottom: 12px;
+  background-color: white; outline: none; box-sizing: border-box;
 }
-input:focus { outline: none; border-color: var(--secondary-color); }
+input:focus, .select-blood:focus { border-color: var(--secondary-color); }
+
+.select-blood {
+  padding-left: 36px;
+  cursor: pointer;
+  color: #5a7a80;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231D9E75' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
 
 .btn-close {
   display: flex; align-items: center; justify-content: center;
@@ -147,8 +210,8 @@ input:focus { outline: none; border-color: var(--secondary-color); }
 }
 .btn-close:hover { background: #fee2e2; color: #dc2626; }
 
-.field-icon { position: relative; display: flex; align-items: center; }
-.field-icon .icon { position: absolute; left: 12px; color: #1D9E75; pointer-events: none; top: 14px; }
+.field-icon { position: relative; display: flex; align-items: center; width: 100%; }
+.field-icon .icon { position: absolute; left: 12px; color: #1D9E75; pointer-events: none; top: 14px; z-index: 10; }
 .field-icon input { padding-left: 36px; }
 
 .checkbox-container {

@@ -69,7 +69,7 @@
           <h2 class="card-title card-title--accent">Acciones Rápidas</h2>
         </div>
         <div class="action-list">
-          <button class="action-btn action-btn--dark" @click="$router.push({ name: 'AdminMedicos', query: { nuevo: 'true' } })">
+          <button class="action-btn action-btn--dark" @click="mostrarModalMedico = true">
             <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             Registrar Médico
           </button>
@@ -84,7 +84,7 @@
             Registrar Administrador
           </button>
 
-          <button class="action-btn action-btn--outline" @click="$router.push({ name: 'AdminFarmaceuticos', query: { nuevo: 'true' } })">
+          <button class="action-btn action-btn--outline" @click="mostrarModalFarmaceutico = true">
             <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             Registrar Farmacéutico
           </button>
@@ -97,11 +97,23 @@
       @close="mostrarModalPaciente = false"
       @actualizar="cargarUsuarios"
     />
+
+    <registrarMedico
+      v-if="mostrarModalMedico"
+      @close="mostrarModalMedico = false"
+      @actualizar="cargarUsuarios"
+    />
   </div>
+
   <registrarAdministrador
     v-if="mostrarModalAdmin"
     @close="mostrarModalAdmin = false"
     @actualizar="cargarUsuarios"
+  />
+  <registrarFarmaceutico
+  v-if="mostrarModalFarmaceutico"
+  @close="mostrarModalFarmaceutico = false"
+  @actualizar="cargarUsuarios"
   />
 </template>
 
@@ -109,15 +121,26 @@
 import { ref, computed, onMounted } from 'vue';
 import { Hand } from 'lucide-vue-next';
 import api from '@/api/axios.js';
+
+// Importación de Componentes de Registro
 import registroPaciente from '@/modules/administradores/components/registroPaciente.vue';
-import registrarAdministrador from '@/modules/administradores/components/registrarAdministradores.vue'
-const nombreUsuario = ref('Administrador'); // Valor por defecto
+import registrarAdministrador from '@/modules/administradores/components/registrarAdministradores.vue';
+import registrarMedico from '@/modules/administradores/components/registrarMedico.vue';
+import registrarFarmaceutico from '@/modules/administradores/components/registrarFarmaceutico.vue';
+
+defineEmits(['ver', 'editar', 'eliminar'])
+
+const nombreUsuario = ref('Administrador');
 const fechaActual = ref('');
 
-const mostrarModalAdmin = ref(false)
-const usuarios = ref([]);
 const cargando = ref(false);
+const usuarios = ref([]);
+
+// Variables Reactivas para controlar la visibilidad de los Modales
+const mostrarModalAdmin = ref(false);
 const mostrarModalPaciente = ref(false);
+const mostrarModalMedico = ref(false); 
+const mostrarModalFarmaceutico = ref(false);
 
 const cargarUsuarios = async () => {
   cargando.value = true;
@@ -147,6 +170,7 @@ const usuariosRecientes = computed(() =>
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(0, 5)
 );
+
 const obtenerDatosSesion = () => {
   const sesion = JSON.parse(localStorage.getItem('user')); 
   if (sesion && sesion.name) {
@@ -156,51 +180,34 @@ const obtenerDatosSesion = () => {
   const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
   fechaActual.value = new Intl.DateTimeFormat('es-ES', opciones).format(new Date());
 };
+
 onMounted(() => {
   cargarUsuarios();
   obtenerDatosSesion();
 });
-onMounted(cargarUsuarios);
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@600;700&display=swap');
 
 .dashboard { display: flex; flex-direction: column; gap: 22px; font-family: 'DM Sans', sans-serif; }
-/* ── Welcome Card Header ── */
-.page-header {
-  margin-bottom: 8px;
-}
+.page-header { margin-bottom: 8px; }
 
 .welcome-card {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(15, 122, 90, 1);
-  padding: 24px 30px;
-  border-radius: 20px;
-  color: white;
-  box-shadow: 0 10px 25px rgba(26, 43, 46, 0.15);
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  background: rgba(15, 122, 90, 1); padding: 24px 30px; border-radius: 20px;
+  color: white; box-shadow: 0 10px 25px rgba(26, 43, 46, 0.15);
 }
 
 .welcome-title {
-  display: flex;
-  align-items: center;
-  gap: 12px; /* Espacio entre el texto y la mano */
-  font-family: 'Sora', sans-serif;
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 4px 0;
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 700; margin: 0 0 4px 0;
 }
 
 .icon-hand {
-  color: #fbbf24; /* Un color ámbar/dorado para la mano */
-  animation: wave 2s infinite origin-bottom;
-  transform-origin: bottom right;
+  color: #fbbf24; animation: wave 2s infinite origin-bottom; transform-origin: bottom right;
 }
 
-/* Animación de saludo */
 @keyframes wave {
   0% { transform: rotate( 0.0deg) }
   10% { transform: rotate(14.0deg) }
@@ -212,26 +219,17 @@ onMounted(cargarUsuarios);
   100% { transform: rotate( 0.0deg) }
 }
 
-/* Ajuste para móviles */
 @media (max-width: 600px) {
-  .welcome-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-    padding: 20px;
-  }
+  .welcome-card { flex-direction: column; align-items: flex-start; gap: 15px; padding: 20px; }
 }
 .page-sub { font-size: 13px; color: whitesmoke; font-weight: 600; margin: 0; }
 
-/* ── Stats ── */
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 @media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
 .stat-card {
-  border-radius: 16px; padding: 20px 18px;
-  display: flex; flex-direction: column; gap: 6px;
-  border: 1.5px solid transparent;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  border-radius: 16px; padding: 20px 18px; display: flex; flex-direction: column; gap: 6px;
+  border: 1.5px solid transparent; transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,80,70,0.1); }
 .stat-card--green  { background: #edfaf5; border-color: #b2e8d6; }
@@ -240,8 +238,7 @@ onMounted(cargarUsuarios);
 .stat-card--purple { background: #f3f0fb; border-color: #c9bff0; }
 
 .stat-icon {
-  width: 38px; height: 38px; border-radius: 10px;
-  background: rgba(255,255,255,0.7);
+  width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,0.7);
   display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
 }
 .stat-card--green  .stat-icon { color: #1D9E75; }
@@ -253,7 +250,6 @@ onMounted(cargarUsuarios);
 .stat-number { font-family: 'Sora', sans-serif; font-size: 32px; font-weight: 700; color: #1a2b2e; line-height: 1; }
 .stat-label { font-size: 12px; font-weight: 500; color: #5a7a80; }
 
-/* ── Bottom ── */
 .bottom-grid { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; }
 @media (max-width: 820px) { .bottom-grid { grid-template-columns: 1fr; } }
 
@@ -262,21 +258,14 @@ onMounted(cargarUsuarios);
 .card-title { font-size: 14px; font-weight: 600; color: #1a2b2e; margin: 0; }
 .card-title--accent { color: #1D9E75; }
 
-/* ── User list ── */
 .user-list { display: flex; flex-direction: column; }
-.user-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 13px 20px; border-bottom: 1px solid #f2f7f5;
-  transition: background 0.15s;
-}
+.user-item { display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid #f2f7f5; transition: background 0.15s; }
 .user-item:last-child { border-bottom: none; }
 .user-item:hover { background: #f8fdfb; }
 
 .user-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: #d6f5eb; color: #0d7a63;
-  font-family: 'Sora', sans-serif; font-weight: 700; font-size: 13px;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 36px; height: 36px; border-radius: 50%; background: #d6f5eb; color: #0d7a63;
+  font-family: 'Sora', sans-serif; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .user-info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .user-name { font-size: 13.5px; font-weight: 600; color: #1a2b2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -287,13 +276,10 @@ onMounted(cargarUsuarios);
 
 .empty { padding: 32px; text-align: center; color: #7a9aaa; font-size: 13.5px; }
 
-/* ── Actions ── */
 .action-list { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
 .action-btn {
-  display: flex; align-items: center; gap: 8px; width: 100%;
-  padding: 11px 16px; border-radius: 10px; border: none;
-  font-family: 'DM Sans', sans-serif; font-size: 13.5px;
-  font-weight: 600; cursor: pointer; transition: all 0.16s ease;
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 11px 16px; border-radius: 10px; border: none;
+  font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.16s ease;
 }
 .action-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 .action-btn--dark    { background: #1a2b2e; color: #fff; }

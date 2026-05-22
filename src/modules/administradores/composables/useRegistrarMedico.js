@@ -1,29 +1,22 @@
 import { ref } from 'vue';
-import { pacienteService } from '../services/pacienteService';
+import { medicoService } from '../services/registrarMedicoService';
 
-export function useRegistroPaciente() {
+export function useRegistrarMedico() {
   const cargando = ref(false);
   const errores = ref(null);
 
   const formulario = ref({
     nombre: '',
     apellido: '',
-    segundo_apellido: '',  
     email: '',
-    password: '',
-    ci: '',
-    fecha_nacimiento: '',
-    telefono: '',
-    direccion: '',
-    tipo_sangre_id: '', 
-    seguro: false
+    password: ''
   });
 
   const enviarRegistro = async () => {
     cargando.value = true;
     errores.value = null;
     try {
-      await pacienteService.registrarPacienteCompleto(formulario.value);
+      await medicoService.registrarMedico(formulario.value);
       return true;
     } catch (err) {
       errores.value = err;
