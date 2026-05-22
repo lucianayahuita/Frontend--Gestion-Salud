@@ -60,7 +60,22 @@ const routes = [
       {
         path: 'pacientes',
         name: 'MedicoPacientes',
-        component: () => import('@/modules/views/Paciente/Paciente.vue')
+        component: () => import('@/modules/medicos/components/gestionPacientes.vue')
+      },
+      {
+        path: 'pacientes/:id/historial',
+        name: 'HistorialClinico',
+        component: () => import('@/modules/medicos/components/HistorialClinico.vue'),
+        props: true 
+      },
+      {
+        path: '/nueva-consulta/:id',
+        name: 'NuevaConsulta',
+        component: () => import('@/modules/medicos/components/RegistrarConsulta.vue'), 
+        props: route => ({ 
+          id: route.params.id, 
+          cita: route.params.cita 
+        })
       },
       {
         path: 'citas',

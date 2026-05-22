@@ -120,8 +120,9 @@
         <p>Buscando tus citas...</p>
       </div>
 
-      <div v-else-if="listaCitas.length > 0" class="citas-lista-container">
-        <div v-for="item in listaCitas" :key="item.id" class="cita-card-horizontal m-bottom" style="margin-bottom: 15px;">
+      <div v-else-if="citasPendientes.length > 0" class="citas-lista-container">
+        
+        <div v-for="item in citasPendientes" :key="item.id" class="cita-card-horizontal m-bottom" style="margin-bottom: 15px;">
           <div class="cita-info-detalle">
             <div class="icon-bg">
               <CalendarSearch :size="24" />
@@ -151,7 +152,7 @@
       <div v-else class="horarios-empty no-cita-box">
         <p>No tienes citas programadas actualmente.</p>
       </div>
-    </div> 
+    </div>
   </div> 
 
   <Teleport to="body">
@@ -178,7 +179,7 @@
   </Teleport>
 </template>
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, computed } from 'vue' 
 import { ChevronDown, CalendarSearch } from 'lucide-vue-next'
 import api from '@/api/axios.js'
 import { useAuthStore } from '@/store/auth' 
@@ -204,6 +205,11 @@ const {
   cargarCitas 
 } = useVerMisCitas()
 
+const citasPendientes = computed(() => {
+  return listaCitas.value.filter(
+    item => item.estado && item.estado.toLowerCase() === 'pendiente'
+  )
+})
 const { cancelar, estaCancelando, errorCancelacion } = useCancelarCita()
 
 const { reprogramar, reprogramando } = useReprogramarCita();

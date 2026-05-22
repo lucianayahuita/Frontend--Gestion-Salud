@@ -36,7 +36,9 @@
             </div>
 
             <div class="cita-actions">
-              <button class="btn-atender">Registrar consulta</button>
+              <button class="btn-atender" @click="irARegistrarConsulta(cita)">
+                Registrar consulta
+              </button>
             </div>
           </div>
         </div>
@@ -84,41 +86,51 @@
         </div>
       </aside>
     </div>
-  </div>
+
+    </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router'; 
 import { CalendarCheck, Clock, CalendarX } from 'lucide-vue-next';
 import api from '@/api/axios.js';
 
+const router = useRouter(); 
 const hoyStr = new Date().toISOString().split('T')[0];
 const fechaFiltro = ref(hoyStr);
 const citas = ref([]);
 const loading = ref(true);
 const nombreMedico = ref('');
+const idMedicoLogueado = ref(null);
 
 const cargarDatos = async () => {
   loading.value = true;
   try {
     const { data: userData } = await api.get('/me');
     nombreMedico.value = userData.data.name;
+    idMedicoLogueado.value = userData.data.id; 
+    
     const { data: citasData } = await api.get(`/medicos/${userData.data.id}/citas`);
     citas.value = citasData.data;
   } catch (err) {
-    console.error('Error:', err);
+    console.error('Error al cargar datos de la agenda:', err);
   } finally {
     loading.value = false;
   }
 };
 
 const attributes = computed(() => {
+  const pendientes = citas.value.filter(
+    cita => cita.estado && cita.estado.toLowerCase() === 'pendiente'
+  );
+
   return [
     {
       highlight: { color: 'green', fillMode: 'light' },
       dates: new Date(fechaFiltro.value + 'T12:00:00'),
     },
-    ...citas.value.map(cita => ({
+    ...pendientes.map(cita => ({
       dot: 'green',
       dates: new Date(cita.fecha + 'T12:00:00'),
     }))
@@ -126,7 +138,11 @@ const attributes = computed(() => {
 });
 
 const citasFiltradas = computed(() => {
-  return citas.value.filter(c => c.fecha === fechaFiltro.value);
+  return citas.value.filter(c => {
+    const coincideFecha = c.fecha === fechaFiltro.value;
+    const esPendiente = c.estado && c.estado.toLowerCase() === 'pendiente';
+    return coincideFecha && esPendiente;
+  });
 });
 
 const formatearFechaSimple = (f) => {
@@ -134,9 +150,16 @@ const formatearFechaSimple = (f) => {
   return new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long' }).format(new Date(f + 'T00:00:00'));
 };
 
-const fechaActual = computed(() => {
-  return new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
-});
+const irARegistrarConsulta = (cita) => {
+  console.log("Enviando cita a la ruta:", cita);
+  router.push({ 
+    name: 'NuevaConsulta', 
+    params: { 
+      id: cita.paciente.id,
+      cita: JSON.stringify(cita) 
+    } 
+  });
+};
 
 onMounted(cargarDatos);
 </script>
@@ -187,7 +210,6 @@ onMounted(cargarDatos);
   margin: 0;
   z-index: 1;
 }
-.date-display { background: #eef4fb; color: #2563eb; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; text-transform: capitalize; }
 
 .main-content-layout { display: grid; grid-template-columns: 1fr 340px; gap: 30px; }
 
@@ -212,7 +234,8 @@ onMounted(cargarDatos);
 .patient-name { display: block; font-weight: 600; color: #1a2b2e; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: capitalize; }
 .patient-id { font-size: 12px; color: #7a9aaa; }
 
-.btn-atender { background: rgba(13, 148, 136, 1); color: white; border: none; padding: 8px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+.btn-atender { background: rgba(13, 148, 136, 1); color: white; border: none; padding: 8px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.btn-atender:hover { background: rgba(15, 118, 110, 1); }
 
 /* Sidebar Calendario */
 .calendar-card { background: white; border-radius: 20px; border: 1.5px solid #edf2f0; padding: 20px; position: sticky; top: 30px; }

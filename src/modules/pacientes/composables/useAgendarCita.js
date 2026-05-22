@@ -26,8 +26,6 @@ export function useAgendarCita() {
       weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
     })
   })
-
-  // ✅ Obtiene médicos Y resuelve el paciente_id del usuario logueado
   const cargarMedicos = async () => {
     cargandoMedicos.value = true
     error.value = null
@@ -35,7 +33,6 @@ export function useAgendarCita() {
       // 1. Cargar lista de médicos
       medicos.value = await agendarCitaService.obtenerMedicos()
 
-      // 2. Buscar el paciente asociado al user_id del usuario logueado
       const userId = authStore.user?.id
       if (userId) {
         const paciente = await agendarCitaService.obtenerPacientePorUserId(userId)

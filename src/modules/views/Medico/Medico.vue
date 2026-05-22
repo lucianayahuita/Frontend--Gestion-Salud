@@ -7,7 +7,7 @@
             ¡Hola, Dr/a. {{ nombreMedico }}! 
             <Hand class="icon-hand" :size="28" :stroke-width="2.5" />
           </h1>
-          <p class="page-sub">Tienes {{ citas.length }} consultas pendientes en tu agenda.</p>
+          <p class="page-sub">Tienes {{ citasPendientes.length }} consultas pendientes en tu agenda.</p>
         </div>
       </div>
     </div>
@@ -15,7 +15,7 @@
     <section class="appointments-container">
       <div class="section-header">
         <h2 class="section-title">Cronograma de Consultas</h2>
-        <span class="count-tag">{{ citas.length }} Total</span>
+        <span class="count-tag">{{ citasPendientes.length }} Total</span>
       </div>
 
       <div v-if="cargando" class="loading-state">
@@ -24,7 +24,7 @@
       </div>
       
       <div v-else class="appointments-list">
-        <div v-for="cita in citas" :key="cita.id" class="appointment-card-horizontal">
+        <div v-for="cita in citasPendientes" :key="cita.id" class="appointment-card-horizontal">
           <div class="card-left-info">
             <div class="time-block">
               <Clock :size="16" />
@@ -50,14 +50,17 @@
 
           <div class="card-status-area">
             <span :class="['status-badge', esHoy(cita.fecha) ? 'today' : 'upcoming']">
-              {{ esHoy(cita.fecha) ? 'Hoy' : 'Próximamente' }}
+              {{ esHoy(cita.fecha) ? 'Hoy' : 'Próximamente' }} • {{ cita.estado }}
             </span>
-            <button class="btn-action">Ver historial</button>
+            
+            <button class="btn-action" @click="verHistorial(cita.paciente.id)">
+              Ver historial
+            </button>
           </div>
         </div>
 
-        <div v-if="citas.length === 0" class="empty-state">
-          <p>No se encontraron citas para los próximos días.</p>
+        <div v-if="citasPendientes.length === 0" class="empty-state">
+          <p>No se encontraron consultas pendientes para los próximos días.</p>
         </div>
       </div>
     </section>
@@ -65,14 +68,23 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { Hand, Clock, Calendar } from 'lucide-vue-next';
 import api from '@/api/axios.js';
-
+import { useRouter } from 'vue-router';
 const nombreMedico = ref('');
 const citas = ref([]);
 const cargando = ref(true);
 const fechaActual = ref('');
+const router = useRouter();
+const verHistorial = (pacienteId) => {
+  router.push({ name: 'HistorialClinico', params: { id: String(pacienteId) } });
+};
+const citasPendientes = computed(() => {
+  return citas.value.filter(
+    cita => cita.estado && cita.estado.toLowerCase() === 'pendiente'
+  );
+});
 
 const cargarDatos = async () => {
   cargando.value = true;
@@ -99,7 +111,6 @@ onMounted(() => {
   fechaActual.value = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
 });
 </script>
-
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700&display=swap');
 
