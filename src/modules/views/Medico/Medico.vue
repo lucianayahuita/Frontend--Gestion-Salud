@@ -114,7 +114,7 @@ onMounted(() => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Sora:wght@600;700&display=swap');
 
-.dashboard { padding: 30px; font-family: 'DM Sans', sans-serif; background: #f4f7f6; min-height: 100vh; }
+.dashboard { padding: 5px; font-family: 'DM Sans', sans-serif; background: #f4f7f6; min-height: 100vh; }
 
 /* Header */
 .welcome-card {

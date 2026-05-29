@@ -140,7 +140,7 @@
         <!-- Farmacéutico -->
         <template v-if="rolId === 5">
           <div class="nav-section-label" v-if="!sidebarCollapsed">Farmacia</div>
-          <router-link to="/farmacia/inventario" class="nav-item" active-class="nav-item--active">
+          <router-link to="/farmaceutico/inventario" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-14v4m0 0l-8-4m8 4l8-4"
@@ -149,14 +149,16 @@
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Inventario</span>
           </router-link>
-          <router-link to="/farmacia/recetas" class="nav-item" active-class="nav-item--active">
+
+          <router-link to="/farmaceutico/disponibilidad" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M11 8v3l2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
               </svg>
             </span>
-            <span class="nav-label" v-if="!sidebarCollapsed">Recetas</span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Consulta Disponibilidad</span>
           </router-link>
         </template>
       </nav>
@@ -257,21 +259,23 @@ export default {
       return classes[this.rolId] || 'guest';
     },
     dashboardPath() {
-      const paths = { 1: '/admin/dashboard', 2: '/medico/dashboard', 4: '/paciente/dashboard', 5: '/farmacia/dashboard' };
+      const paths = { 1: '/admin/dashboard', 2: '/medico/dashboard', 4: '/paciente/dashboard', 5: '/farmaceutico/dashboard' };
       return paths[this.rolId] || '/login';
     },
     currentPageTitle() {
-      const titles = {
-        '/admin/dashboard': 'Dashboard',
-        '/admin/gestion-pacientes': 'Gestión de Pacientes',
-        '/admin/gestion-medicos': 'Gestión de Médicos',
-        '/admin/gestion-administradores': 'Gestión de Administradores',
-        '/admin/gestion-farmaceuticos': 'Gestión Farmacéutica',
-        '/farmacia/dashboard': 'Dashboard Farmacia',
-        '/farmacia/inventario': 'Inventario de Medicamentos',
-        '/farmacia/recetas': 'Recetas Médicas',
-      };
-      return titles[this.$route?.path] || 'Panel';
+        const titles = {
+          '/admin/dashboard': 'Dashboard',
+          '/admin/gestion-pacientes': 'Gestión de Pacientes',
+          '/admin/gestion-medicos': 'Gestión de Médicos',
+          '/admin/gestion-administradores': 'Gestión de Administradores',
+          '/admin/gestion-farmaceuticos': 'Gestión Farmacéutica',
+          '/farmaceutico/dashboard': 'Dashboard',         
+          '/farmaceutico/inventario': 'Inventario de Medicamentos',  
+          '/farmaceutico/disponibilidad': 'Consulta de Disponibilidad', 
+          '/farmacia/inventario': 'Inventario de Medicamentos',
+          '/farmacia/recetas': 'Recetas Médicas',
+        };
+        return titles[this.$route?.path] || 'Panel';
     },
     formattedDate() {
       return new Date().toLocaleDateString('es-BO', {

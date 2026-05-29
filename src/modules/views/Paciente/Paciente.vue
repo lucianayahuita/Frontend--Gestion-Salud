@@ -384,7 +384,7 @@ onMounted(cargarDatosDashboard);
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700&display=swap');
 
 .dashboard-container {
-  padding: 20px 30px;
+  padding: 5px 30px;
   max-width: 1200px;
   margin: 0 auto;
   font-family: 'DM Sans', sans-serif;

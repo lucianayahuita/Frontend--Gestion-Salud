@@ -95,6 +95,16 @@ const routes = [
         path: 'dashboard',
         name: 'FarmaceuticoDashboard',
         component: () => import('@/modules/views/Farmaceutico/Farmaceutico.vue')
+      },
+      {
+        path: 'inventario',
+        name: 'FarmaceuticoInventario',
+        component: () => import('@/modules/farmaceuticos/components/Inventario.vue')
+      },
+      {
+        path: 'disponibilidad',
+        name: 'FarmaceuticoDisponibilidad',
+        component: () => import('@/modules/farmaceuticos/components/ConsultaDisponibilidad.vue')
       }
     ]
   },
@@ -157,7 +167,7 @@ router.beforeEach((to, from, next) => {
     const dashboards = {
       1: '/admin/dashboard',
       2: '/medico/dashboard',
-      5: '/farmaceutico/dashboard',
+      5: '/farmaceutico/dashboard', 
       4: '/paciente/dashboard',
     };
     return next(dashboards[rolId] || '/login');
