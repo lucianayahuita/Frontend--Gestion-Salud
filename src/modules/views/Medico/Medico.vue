@@ -80,10 +80,17 @@ const router = useRouter();
 const verHistorial = (pacienteId) => {
   router.push({ name: 'HistorialClinico', params: { id: String(pacienteId) } });
 };
+
 const citasPendientes = computed(() => {
-  return citas.value.filter(
-    cita => cita.estado && cita.estado.toLowerCase() === 'pendiente'
-  );
+  const hoyString = new Date().toLocaleDateString('sv-SE'); 
+
+  return citas.value.filter(cita => {
+    const esPendiente = cita.estado && cita.estado.toLowerCase() === 'pendiente';
+    
+    const esFechaValida = cita.fecha >= hoyString;
+
+    return esPendiente && esFechaValida;
+  });
 });
 
 const cargarDatos = async () => {
