@@ -87,6 +87,41 @@
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Farmacéuticos</span>
           </router-link>
+
+          <div class="nav-section-label" v-if="!sidebarCollapsed">Operaciones</div>
+
+          <router-link :to="{ name: 'AdminTransacciones' }" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-14v4m0 0l-8-4m8 4l8-4"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Transacciones Farmacia</span>
+          </router-link>
+
+          <router-link :to="{ name: 'AdminCitas' }" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Gestión de Citas</span>
+          </router-link>
+
+          <div class="nav-section-label" v-if="!sidebarCollapsed">Análisis</div>
+
+          <router-link :to="{ name: 'AdminReportes' }" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 3v18h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M7 16l4-4 4 4 4-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Reportes</span>
+          </router-link>
         </template>
 
         <!-- Médico -->
@@ -322,6 +357,9 @@ export default {
         '/admin/gestion-medicos': 'Gestión de Médicos',
         '/admin/gestion-administradores': 'Gestión de Administradores',
         '/admin/gestion-farmaceuticos': 'Gestión Farmacéutica',
+        '/admin/transacciones-farmacia': 'Transacciones de Farmacia',  // ← nuevo
+        '/admin/gestion-citas': 'Gestión de Citas',                    // ← nuevo
+        '/admin/reportes': 'Reportes',                                  // ← nuevo
         '/soporte/dashboard': 'Dashboard',
         '/soporte/pacientes': 'Gestión de Pacientes',
         '/soporte/medicos': 'Gestión de Médicos',

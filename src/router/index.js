@@ -16,7 +16,7 @@ const routes = [
   {
     path: '/admin',
     component: MainLayout,
-    meta: { requiresAuth: true, rolId: 1 }, // Rol 1 = Admin
+    meta: { requiresAuth: true, rolId: 1 },
     children: [
       {
         path: 'dashboard',
@@ -42,7 +42,22 @@ const routes = [
         path: 'gestion-administradores',
         name: 'AdminGestionAdmins',
         component: () => import('@/modules/administradores/components/gestionAdministradores.vue')
-      }
+      },
+      {
+        path: 'transacciones-farmacia',
+        name: 'AdminTransacciones',
+        component: () => import('@/modules/farmaceuticos/components/ConsultaDisponibilidad.vue') 
+      },
+      {
+        path: 'gestion-citas',
+        name: 'AdminCitas',
+        component: () => import('@/modules/soporte/components/CitasProgramadas.vue') // ← reutiliza el de soporte
+      },
+      {
+        path: 'reportes',
+        name: 'AdminReportes',
+        component: () => import('@/modules/administradores/components/Reportes.vue')
+      },
     ]
   },
 
