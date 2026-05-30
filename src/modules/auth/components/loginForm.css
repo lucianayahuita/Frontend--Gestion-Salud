@@ -1,4 +1,5 @@
 @import "../../../assets/global.css";
+
 .fondo {
   background-color: var(--secondary-color);
   height: 100vh;
@@ -6,143 +7,360 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 20px;
   position: fixed;
   top: 0;
   left: 0;
   overflow: hidden;
 }
 
-.logo-marca {
-  text-align: center;
-  color: white;
-}
-img {
-  max-width: 80%;
-  height: auto; 
-  display: block; 
-}
-.img-container img {
-  width: 250px;
-  margin-bottom: 20px;
+/* ── Panel izquierdo ── */
+.panel-izquierdo {
+  position: relative;
+  width: 60%;
+  height: 100vh;        
+  max-height: none;     
+  border-radius: 0;     
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-.gestion-salud {
-  display: flex;         
-  flex-direction: column; 
-  gap: 0px;              
+.imagen-lateral {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+.overlay-imagen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    170deg,
+    rgba(10, 60, 42, 0.45) 0%,
+    rgba(4, 40, 28, 0.88) 100%
+  );
+  z-index: 1;
+}
+.badge-top {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 16px;
+  padding: 10px 10px;
+  display: flex;
   align-items: center;
+  gap: 5px;
+}
+
+.logo-badge-cns {
+  height: 48px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+
+.badge-top span {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-work);
+}
+
+.logo-badge-cns {
+  height: 48px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+.info-marca {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 32px 32px 36px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.logo-img-cns {
+  height: 52px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+
+.logo-img {
+  height: 64px;
+  width: auto;
+  filter: brightness(0) invert(1) sepia(1) saturate(2) hue-rotate(100deg) brightness(1.4);
 }
 
 .slogan {
-  margin-top: 2px;
-  font-size: 1.2rem;
-  font-weight: 400;
-  margin-right:50px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 1.10rem;
+  font-weight: 300;
+  line-height: 1.65;
   font-family: var(--font-work);
+  letter-spacing: 0.01em;
 }
 
-.login-card {
+/* ── Panel derecho ── */
+.panel-derecho {
   background: #ffffff;
-  padding: 60px 40px;
-  border-radius: 30px;
-  width: 100%;
-  max-width: 420px;
-  height: 490px;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+  width: 40%;
+  height: 100vh;        
+  max-height: none;     
+  border-radius: 0;    
+  padding: 52px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cabecera {
+  margin-bottom: 32px;
 }
 
 .titulo-login {
-  text-align: center;
+  font-size: 1.8rem;
   font-weight: 800;
-  margin-bottom: 40px;
-  color: #000;
+  color: #0d2b1e;
+  letter-spacing: -0.02em;
+  margin-bottom: 5px;
   font-family: var(--font-work);
 }
 
+.subtitulo-login {
+  font-size: 0.83rem;
+  color: #8a9e97;
+  font-weight: 400;
+  font-family: var(--font-work);
+}
+
+/* ── Inputs ── */
 .input-group {
-  margin-bottom: 25px;
+  margin-bottom: 18px;
 }
 
 .input-group label {
   display: block;
-  margin-bottom: 10px;
-  font-weight: 500;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #2d5c46;
+  margin-bottom: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   font-family: var(--font-work);
 }
 
-.input-group input {
+.input-wrap {
+  position: relative;
+}
+
+.input-wrap input {
   width: 100%;
-  padding: 15px;
-  border: 1px solid #c0c0c0;
-  border-radius: 4px;
-  box-sizing: border-box; 
+  padding: 12px 42px 12px 16px;
+  border: 1.5px solid #d8e9e3;
+  border-radius: 11px;
+  font-size: 0.88rem;
+  color: #1a3a2a;
+  font-family: var(--font-work);
+  outline: none;
+  background: #f7fcf9;
+  transition: border-color 0.2s, background 0.2s;
+  box-sizing: border-box;
+}
+
+.input-wrap input:focus {
+  border-color: #1D9E75;
+  background: #ffffff;
+}
+
+.input-wrap input::placeholder {
+  color: #b0c9bf;
+}
+
+.input-ico {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9dbfb3;
+  pointer-events: none;
+}
+
+.toggle-pass {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9dbfb3;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: color 0.2s;
+}
+
+.toggle-pass:hover {
+  color: #1D9E75;
+}
+
+/* ── Forgot ── */
+.forgot-row {
+  text-align: right;
+  margin: -4px 0 22px;
+}
+
+.link-forgot {
+  font-size: 0.76rem;
+  color: #1D9E75;
+  text-decoration: none;
+  font-weight: 600;
   font-family: var(--font-work);
 }
 
+.link-forgot:hover {
+  text-decoration: underline;
+}
+
+/* ── Botón ── */
 .btn-login {
   width: 100%;
-  padding: 15px;
-  background-color: #82c0aa;
-  border: 1px solid #668d7e;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top:2%;
-  font-family: var(--font-work);
-  font-size: 100%;
-}
-.btn-login:hover {
-  background-color: var(--cards1-color);
+  padding: 13px;
+  background-color: #1D9E75;
   color: white;
+  border: none;
+  border-radius: 11px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-work);
+  letter-spacing: 0.02em;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-login:hover {
+  background-color: #0f6e56;
+}
+
+.btn-login:active {
+  transform: scale(0.98);
 }
 
 .btn-login:disabled {
-  background-color: #ccc;
+  background-color: #b0c9bf;
+  cursor: not-allowed;
 }
 
-.linea-separadora {
-  border-top: 2px solid var(--secondary-color); 
-  width: 100%;               
-  margin: -20px auto 30px;    
-  opacity: 0.6;              
+/* ── Divider ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+  color: #b0c9bf;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  font-family: var(--font-work);
+  text-transform: uppercase;
 }
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e8f2ee;
+}
+
+/* ── Registro ── */
+.registro-link {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #8a9e97;
+  font-family: var(--font-work);
+}
+
+.registro-link a {
+  color: #1D9E75;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.registro-link a:hover {
+  text-decoration: underline;
+}
+
+/* ── Modales ── */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw; /* Cambia a vw para asegurar el ancho total */
-  height: 100vh; /* Cambia a vh para asegurar el alto total */
-  background: rgba(0, 0, 0, 0.8); /* Más oscuro para notar la diferencia */
-  display: flex; /* Si esto no está, el modal no se centra y puede que no se vea */
+  width: 100vw;
+  height: 100dvh;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999 !important; /* El valor más alto posible */
+  z-index: 99999;
 }
 
 .modal-content {
   background: white;
-  padding: 30px;
-  border-radius: 15px;
+  padding: 36px 30px;
+  border-radius: 16px;
   text-align: center;
   width: 90%;
-  max-width: 400px;
-  position: relative; 
-  border-color: var(--secondary-color) 30px solid;
-  z-index: 10000;
+  max-width: 380px;
+  position: relative;
+  z-index: 100000;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
-.btn-entendido {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: var(--secondary-color);
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+
+.modal-header {
+  margin-bottom: 12px;
 }
+
 .modal-content h3 {
-  margin-bottom: 15px;
+  color: #333;
+  margin-bottom: 10px;
   font-family: var(--font-work);
+  font-size: 1.1rem;
+}
+
+.modal-content p {
+  color: #666;
+  font-size: 0.9rem;
+  font-family: var(--font-work);
+}
+
+.p-success {
+  color: rgba(13, 148, 136, 1) !important;
+}
+
+.btn-entendido {
+  margin-top: 22px;
+  padding: 11px 28px;
+  background-color: #1D9E75;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-work);
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.btn-entendido:hover {
+  background-color: #0f6e56;
 }

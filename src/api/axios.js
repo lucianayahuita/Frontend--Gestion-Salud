@@ -1,4 +1,3 @@
-// src/api/axios.js
 import axios from 'axios';
 
 const api = axios.create({
@@ -9,7 +8,6 @@ const api = axios.create({
     }
 });
 
-// Pega el token en cada petición
 api.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
     if (token) {
