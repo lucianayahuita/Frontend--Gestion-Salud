@@ -8,7 +8,7 @@
 
         <div>
           <h3 class="modal-title">
-            Actualizar datos del Administrador
+            Actualizar datos del Personal de Soporte
           </h3>
 
          

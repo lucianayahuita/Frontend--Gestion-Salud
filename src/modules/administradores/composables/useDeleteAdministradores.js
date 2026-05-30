@@ -15,7 +15,7 @@ export function useDeleteAdministradores() {
       await deleteAdministradoresService.eliminar(id)
       return true
     } catch (e) {
-      errorEliminar.value = 'No se pudo eliminar el administrador'
+      errorEliminar.value = 'No se pudo eliminar el personal de soporte. Por favor, intenta nuevamente.'
       return false
     } finally {
       eliminando.value = false

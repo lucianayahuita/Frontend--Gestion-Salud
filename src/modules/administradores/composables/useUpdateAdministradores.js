@@ -31,7 +31,7 @@ export function useUpdateAdministradores() {
 
       error.value =
         e ||
-        'No se pudo actualizar el administrador'
+        'No se pudo actualizar el personal de soporte. Por favor, intenta nuevamente.'
 
     
       throw e

@@ -18,7 +18,7 @@ export function useRegistrarAdministradores() {
       await registrarAdminService.registrar(formulario.value)
       return true
     } catch (err) {
-      errores.value = typeof err === 'string' ? err : 'Error al registrar el administrador'
+      errores.value = typeof err === 'string' ? err : 'Error al registrar personal de soporte'
       return false
     } finally {
       cargando.value = false

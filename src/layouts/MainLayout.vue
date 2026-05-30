@@ -75,7 +75,7 @@
                   stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
               </svg>
             </span>
-            <span class="nav-label" v-if="!sidebarCollapsed">Administradores</span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Soporte</span>
           </router-link>
 
           <router-link :to="{ name: 'AdminFarmaceuticos' }" class="nav-item" active-class="nav-item--active">
@@ -159,6 +159,59 @@
               </svg>
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Consulta Disponibilidad</span>
+          </router-link>
+        </template>
+
+        <!-- Soporte -->
+        <template v-if="rolId === 3">
+          <div class="nav-section-label" v-if="!sidebarCollapsed">Gestión</div>
+
+          <router-link to="/soporte/pacientes" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M3 20c0-3.3 2.7-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="17" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M21 20c0-3.3-2.7-6-6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Pacientes</span>
+          </router-link>
+
+          <router-link to="/soporte/medicos" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M12 11V7M10 9h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <rect x="9" y="14" width="6" height="7" rx="1" stroke="currentColor" stroke-width="1.8"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Médicos</span>
+          </router-link>
+
+          <div class="nav-section-label" v-if="!sidebarCollapsed">Farmacia</div>
+
+          <router-link to="/soporte/farmaceuticos" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Farmacéuticos</span>
+          </router-link>
+
+          <div class="nav-section-label" v-if="!sidebarCollapsed">Citas</div>
+
+          <router-link to="/soporte/citas" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Ver Citas</span>
           </router-link>
         </template>
       </nav>
@@ -251,31 +304,36 @@ export default {
       return this.userName.charAt(0).toUpperCase();
     },
     roleLabel() {
-      const labels = { 1: 'Administrador', 2: 'Médico', 4: 'Paciente', 5: 'Farmacéutico' };
+      const labels = { 1: 'Administrador', 2: 'Médico', 3: 'Soporte', 4: 'Paciente', 5: 'Farmacéutico' };
       return labels[this.rolId] || 'Usuario';
     },
     roleClass() {
-      const classes = { 1: 'administrador', 2: 'medico', 4: 'paciente', 5: 'farmaceutico' };
+      const classes = { 1: 'administrador', 2: 'medico', 3: 'soporte', 4: 'paciente', 5: 'farmaceutico' };
       return classes[this.rolId] || 'guest';
     },
     dashboardPath() {
-      const paths = { 1: '/admin/dashboard', 2: '/medico/dashboard', 4: '/paciente/dashboard', 5: '/farmaceutico/dashboard' };
+      const paths = { 1: '/admin/dashboard', 2: '/medico/dashboard', 3: '/soporte/dashboard', 4: '/paciente/dashboard', 5: '/farmaceutico/dashboard' };
       return paths[this.rolId] || '/login';
     },
     currentPageTitle() {
-        const titles = {
-          '/admin/dashboard': 'Dashboard',
-          '/admin/gestion-pacientes': 'Gestión de Pacientes',
-          '/admin/gestion-medicos': 'Gestión de Médicos',
-          '/admin/gestion-administradores': 'Gestión de Administradores',
-          '/admin/gestion-farmaceuticos': 'Gestión Farmacéutica',
-          '/farmaceutico/dashboard': 'Dashboard',         
-          '/farmaceutico/inventario': 'Inventario de Medicamentos',  
-          '/farmaceutico/disponibilidad': 'Consulta de Disponibilidad', 
-          '/farmacia/inventario': 'Inventario de Medicamentos',
-          '/farmacia/recetas': 'Recetas Médicas',
-        };
-        return titles[this.$route?.path] || 'Panel';
+      const titles = {
+        '/admin/dashboard': 'Dashboard',
+        '/admin/gestion-pacientes': 'Gestión de Pacientes',
+        '/admin/gestion-medicos': 'Gestión de Médicos',
+        '/admin/gestion-administradores': 'Gestión de Administradores',
+        '/admin/gestion-farmaceuticos': 'Gestión Farmacéutica',
+        '/soporte/dashboard': 'Dashboard',
+        '/soporte/pacientes': 'Gestión de Pacientes',
+        '/soporte/medicos': 'Gestión de Médicos',
+        '/soporte/farmaceuticos': 'Gestión de Farmacéuticos',
+        '/soporte/citas': 'Ver Citas Médicas',
+        '/farmaceutico/dashboard': 'Dashboard',
+        '/farmaceutico/inventario': 'Inventario de Medicamentos',
+        '/farmaceutico/disponibilidad': 'Consulta de Disponibilidad',
+        '/farmacia/inventario': 'Inventario de Medicamentos',
+        '/farmacia/recetas': 'Recetas Médicas',
+      };
+      return titles[this.$route?.path] || 'Panel';
     },
     formattedDate() {
       return new Date().toLocaleDateString('es-BO', {
@@ -667,4 +725,5 @@ export default {
   .topbar-date { display: none; }
   .content { padding: 16px; }
 }
+.user-role-badge.soporte { background: #ede9fe; color: #7c3aed; }
 </style>

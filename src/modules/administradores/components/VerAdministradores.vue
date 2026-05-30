@@ -4,7 +4,7 @@
 
       
       <div class="modal-header">
-        <h2 class="modal-title">Detalle del Administrador</h2>
+        <h2 class="modal-title">Detalle del Personal de Soporte</h2>
 
         <button class="btn-close" @click="$emit('close')">
           &times;
@@ -13,7 +13,7 @@
 
       
       <div v-if="cargando" class="estado">
-        <p>Buscando información del administrador...</p>
+        <p>Buscando información del personal de soporte...</p>
       </div>
 
       

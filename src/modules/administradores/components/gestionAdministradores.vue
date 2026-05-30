@@ -6,7 +6,7 @@
         <Search :size="16" class="search-icon" />
         <input v-model="busqueda" placeholder="Buscar por nombre o email..." />
       </div>
-      <button class="btn-registrar" @click="mostrarModal = true">Registrar Administrador</button>
+      <button class="btn-registrar" @click="mostrarModal = true">Registrar Personal de Soporte</button>
     </div>
 
     <p v-if="error" class="error-banner">{{ error }}</p>
@@ -27,7 +27,7 @@
             <td colspan="5" class="estado-celda">Cargando...</td>
           </tr>
           <tr v-else-if="administradoresFiltrados.length === 0">
-            <td colspan="5" class="estado-celda">No hay administradores</td>
+            <td colspan="5" class="estado-celda">No hay personal de soporte registrado</td>
           </tr>
           <tr v-for="admin in administradoresFiltrados" :key="admin.id" class="fila">
             <td class="td-id">{{ admin.id }}</td>
@@ -109,7 +109,7 @@ const cargarAdmins = async () => {
   error.value = null
   try {
     const { data } = await api.get('/users')
-    administradores.value = data.data.filter(u => u.rol_id === 1)
+    administradores.value = data.data.filter(u => u.rol_id === 3)
   } catch (e) {
     error.value = 'Error al cargar administradores'
   } finally {

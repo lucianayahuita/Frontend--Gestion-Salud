@@ -132,7 +132,39 @@ const routes = [
       }
     ]
   },
-
+  // ── Soporte (rol_id: 3) ──
+  {
+    path: '/soporte',
+    component: MainLayout,
+    meta: { requiresAuth: true, rolId: 3 },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'SoporteDashboard',
+        component: () => import('@/modules/views/Soporte/Soporte.vue')
+      },
+      {
+        path: 'pacientes',
+        name: 'SoportePacientes',
+        component: () => import('@/modules/administradores/components/gestionPacientes.vue')
+      },
+      {
+        path: 'medicos',
+        name: 'SoporteMedicos',
+        component: () => import('@/modules/administradores/components/gestionMedicos.vue')
+      },
+      {
+        path: 'farmaceuticos',
+        name: 'SoporteFarmaceuticos',
+        component: () => import('@/modules/administradores/components/gestionFarmaceuticos.vue')
+      },
+      {
+        path: 'citas',
+        name: 'SoporteCitas',
+        component: () => import('@/modules/soporte/components/CitasProgramadas.vue')
+      }
+    ]
+  },
   // ── 404 ──
   {
     path: '/:pathMatch(.*)*',
@@ -167,7 +199,8 @@ router.beforeEach((to, from, next) => {
     const dashboards = {
       1: '/admin/dashboard',
       2: '/medico/dashboard',
-      5: '/farmaceutico/dashboard', 
+      3: '/soporte/dashboard',
+      5: '/farmaceutico/dashboard',
       4: '/paciente/dashboard',
     };
     return next(dashboards[rolId] || '/login');

@@ -17,7 +17,7 @@ export const updateAdministradoresService = {
 
           email: datos.email,
 
-          rol_id: 1
+          rol_id: 3
         }
 
       )
@@ -31,7 +31,7 @@ export const updateAdministradoresService = {
       throw (
         error.response?.data?.message ||
         error.message ||
-        'Error al actualizar administrador'
+        'Error al actualizar personal de soporte'
       )
 
     }

@@ -16,7 +16,7 @@
         </svg>
       </div>
 
-      <h3 class="modal-title">¿Eliminar administrador?</h3>
+      <h3 class="modal-title">¿Eliminar al personal de soporte?</h3>
 
       <p class="modal-desc">
         Esta acción no se puede deshacer. Se eliminará a:

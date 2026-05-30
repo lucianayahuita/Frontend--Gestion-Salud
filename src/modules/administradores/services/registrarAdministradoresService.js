@@ -7,11 +7,11 @@ export const registrarAdminService = {
         name:     datos.name,
         email:    datos.email,
         password: datos.password,
-        rol_id:   1 
+        rol_id:   3 
       })
       return data
     } catch (error) {
-      throw error.response?.data?.message || error.message || 'Error al registrar administrador'
+      throw error.response?.data?.message || error.message || 'Error al registrar personal de soporte'
     }
   }
 }

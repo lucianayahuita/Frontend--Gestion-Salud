@@ -13,7 +13,7 @@ export const verAdministradoresService = {
 
       throw error.response?.data?.message 
         || error.message 
-        || 'Error al obtener administrador'
+        || 'Error al obtener personal de soporte'
     }
   }
 

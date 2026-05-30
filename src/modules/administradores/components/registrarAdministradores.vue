@@ -3,14 +3,14 @@
     <div class="modal-content">
 
       <div class="modal-header">
-        <h2 class="modal-title">Registrar Administrador</h2>
+        <h2 class="modal-title">Registrar Personal de Soporte</h2>
         <button class="btn-close" @click="$emit('close')">&times;</button>
       </div>
 
       <form @submit.prevent="handleSubmit">
 
         <div class="form-section">
-          <span class="section-tag">Datos del Administrador</span>
+          <span class="section-tag">Datos del Personal de Soporte</span>
 
           <div class="field-icon">
             <User :size="16" class="icon" />
@@ -49,7 +49,7 @@
         <div class="modal-footer">
           <button type="button" class="btn-secondary" @click="$emit('close')">Cancelar</button>
           <button type="submit" class="btn-primary" :disabled="cargando">
-            {{ cargando ? 'Procesando...' : 'Guardar Administrador' }}
+            {{ cargando ? 'Procesando...' : 'Guardar Personal de Soporte' }}
           </button>
         </div>
       </form>

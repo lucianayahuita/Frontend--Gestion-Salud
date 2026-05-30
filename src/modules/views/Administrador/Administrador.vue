@@ -27,6 +27,14 @@
         <div class="stat-label">Administradores activos</div>
       </div>
 
+      <div class="stat-card stat-card--teal">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        </div>
+        <div class="stat-number">{{ cargando ? '...' : conteos.soporte }}</div>
+        <div class="stat-label">Personal de Soporte</div>
+      </div>
+
       <div class="stat-card stat-card--yellow">
         <div class="stat-icon">
           <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -45,7 +53,6 @@
     </div>
 
     <div class="bottom-grid">
-
       <div class="card">
         <div class="card-header">
           <h2 class="card-title">Usuarios Recientemente Registrados</h2>
@@ -81,7 +88,7 @@
 
           <button class="action-btn action-btn--soft" @click="mostrarModalAdmin = true">
             <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            Registrar Administrador
+            Registrar Personal de Soporte
           </button>
 
           <button class="action-btn action-btn--outline" @click="mostrarModalFarmaceutico = true">
@@ -111,9 +118,9 @@
     @actualizar="cargarUsuarios"
   />
   <registrarFarmaceutico
-  v-if="mostrarModalFarmaceutico"
-  @close="mostrarModalFarmaceutico = false"
-  @actualizar="cargarUsuarios"
+    v-if="mostrarModalFarmaceutico"
+    @close="mostrarModalFarmaceutico = false"
+    @actualizar="cargarUsuarios"
   />
 </template>
 
@@ -122,7 +129,6 @@ import { ref, computed, onMounted } from 'vue';
 import { Hand } from 'lucide-vue-next';
 import api from '@/api/axios.js';
 
-// Importación de Componentes de Registro
 import registroPaciente from '@/modules/administradores/components/registroPaciente.vue';
 import registrarAdministrador from '@/modules/administradores/components/registrarAdministradores.vue';
 import registrarMedico from '@/modules/administradores/components/registrarMedico.vue';
@@ -136,7 +142,6 @@ const fechaActual = ref('');
 const cargando = ref(false);
 const usuarios = ref([]);
 
-// Variables Reactivas para controlar la visibilidad de los Modales
 const mostrarModalAdmin = ref(false);
 const mostrarModalPaciente = ref(false);
 const mostrarModalMedico = ref(false); 
@@ -157,10 +162,11 @@ const cargarUsuarios = async () => {
 const conteos = computed(() => {
   const activos = usuarios.value.filter(u => u.deleted_at === null);
   return {
-    medicos:         activos.filter(u => u.rol_id === 2).length,
-    administradores: activos.filter(u => u.rol_id === 1).length,
-    pacientes:       activos.filter(u => u.rol_id === 4).length,
-    farmaceuticos:   activos.filter(u => u.rol_id === 5).length,
+    administradores: activos.filter(u => u.rol_id === 1).length, 
+    medicos:         activos.filter(u => u.rol_id === 2).length, 
+    soporte:         activos.filter(u => u.rol_id === 3).length, 
+    pacientes:       activos.filter(u => u.rol_id === 4).length, 
+    farmaceuticos:   activos.filter(u => u.rol_id === 5).length, 
   };
 });
 
@@ -224,8 +230,10 @@ onMounted(() => {
 }
 .page-sub { font-size: 13px; color: whitesmoke; font-weight: 600; margin: 0; }
 
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-@media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+.stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+@media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 750px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } }
 
 .stat-card {
   border-radius: 16px; padding: 20px 18px; display: flex; flex-direction: column; gap: 6px;
@@ -234,6 +242,7 @@ onMounted(() => {
 .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,80,70,0.1); }
 .stat-card--green  { background: #edfaf5; border-color: #b2e8d6; }
 .stat-card--blue   { background: #eef4fb; border-color: #b8d4f0; }
+.stat-card--teal   { background: #e6f6f4; border-color: #a3e0d3; }
 .stat-card--yellow { background: #fefaed; border-color: #f0e0a0; }
 .stat-card--purple { background: #f3f0fb; border-color: #c9bff0; }
 
@@ -243,6 +252,7 @@ onMounted(() => {
 }
 .stat-card--green  .stat-icon { color: #1D9E75; }
 .stat-card--blue   .stat-icon { color: #2563eb; }
+.stat-card--teal   .stat-icon { color: #0d7a63; }
 .stat-card--yellow .stat-icon { color: #b45309; }
 .stat-card--purple .stat-icon { color: #6d28d9; }
 .stat-icon svg { width: 20px; height: 20px; }
