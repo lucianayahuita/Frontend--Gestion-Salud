@@ -44,6 +44,11 @@ const routes = [
         component: () => import('@/modules/administradores/components/gestionAdministradores.vue')
       },
       {
+        path: 'gestion-roles',
+        name: 'AdminRoles',
+        component: () => import('@/modules/administradores/components/gestionRoles.vue')
+      },
+      {
         path: 'transacciones-farmacia',
         name: 'AdminTransacciones',
         component: () => import('@/modules/farmaceuticos/components/ConsultaDisponibilidad.vue') 

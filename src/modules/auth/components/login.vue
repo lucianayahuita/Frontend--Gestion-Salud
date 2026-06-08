@@ -32,9 +32,14 @@
               v-model="email"
               type="text"
               placeholder="ej: luciana@correo.com"
+              @blur="v$.email.$touch()"
+              :class="{ 'input-error-border': v$.email.$error }"
             >
             <User class="input-ico" :size="16" />
           </div>
+          <span v-if="v$.email.$error" class="error-msg-text">
+            {{ v$.email.$errors[0].$message }}
+          </span>
         </div>
 
         <div class="input-group">
@@ -45,6 +50,8 @@
               v-model="password"
               :type="mostrarPassword ? 'text' : 'password'"
               placeholder="••••••••••••"
+              @blur="v$.password.$touch()"
+              :class="{ 'input-error-border': v$.password.$error }"
             >
             <button
               type="button"
@@ -54,6 +61,9 @@
               <component :is="mostrarPassword ? EyeOff : Eye" :size="16" />
             </button>
           </div>
+          <span v-if="v$.password.$error" class="error-msg-text">
+            {{ v$.password.$errors[0].$message }}
+          </span>
         </div>
 
         <button type="submit" class="btn-login" :disabled="loading">
@@ -112,7 +122,8 @@ const {
   showErrorModal,
   showSuccessModal,
   closeError,
-  closeSuccess
+  closeSuccess,
+  v$ 
 } = useLoginForm();
 </script>
 

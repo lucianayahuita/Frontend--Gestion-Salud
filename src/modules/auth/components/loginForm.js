@@ -1,6 +1,9 @@
 import { ref } from 'vue';
 import { useAuth } from '../composables/useAuth';
 import { useRouter } from 'vue-router';
+// 📦 Importamos Vuelidate y las reglas necesarias
+import { useVuelidate } from '@vuelidate/core';
+import { required, email as emailValidator, helpers } from '@vuelidate/validators';
 
 export function useLoginForm() {
   const router = useRouter();
@@ -12,11 +15,30 @@ export function useLoginForm() {
 
   const { login, loading } = useAuth();
 
+  // 1. Definimos las reglas personalizadas vinculadas a cada campo reactivo
+  const rules = {
+    email: {
+      required: helpers.withMessage('El usuario / correo es obligatorio', required),
+      email: helpers.withMessage('El formato del correo electrónico es inválido', emailValidator)
+    },
+    password: {
+      required: helpers.withMessage('La contraseña es obligatoria', required),
+    }
+  };
+
+  // 2. Inicializamos Vuelidate pasando la estructura de las variables
+  // Como estamos usando variables ref sueltas, las agrupamos en un objeto dentro de useVuelidate
+  const v$ = useVuelidate(rules, { email, password });
+
   const handleLogin = async () => {
     errorMessage.value = '';
 
-    if (!email.value || !password.value) {
-      errorMessage.value = 'Por favor, completa todos los campos';
+    // 3. Forzamos a Vuelidate a verificar el estado de los inputs
+    v$.value.$validate();
+
+    // 4. Si el estado es inválido, frenamos el submit de inmediato
+    if (v$.value.$invalid) {
+      errorMessage.value = 'Por favor, corrige los errores en el formulario.';
       showErrorModal.value = true;
       return;
     }
@@ -56,6 +78,8 @@ export function useLoginForm() {
     showSuccessModal,
     handleLogin,
     closeError,
-    closeSuccess
+    closeSuccess,
+    //AQUI MODIFIQUE PARA AGREGAR VUELIDATE
+    v$ 
   };
 }

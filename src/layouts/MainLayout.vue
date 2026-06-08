@@ -77,7 +77,15 @@
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Soporte</span>
           </router-link>
-
+          <router-link :to="{ name: 'AdminRoles' }" class="nav-item" active-class="nav-item--active">
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"
+                stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="nav-label" v-if="!sidebarCollapsed">Gestión de Roles</span>
+        </router-link>
           <router-link :to="{ name: 'AdminFarmaceuticos' }" class="nav-item" active-class="nav-item--active">
             <span class="nav-icon">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -357,9 +365,10 @@ export default {
         '/admin/gestion-medicos': 'Gestión de Médicos',
         '/admin/gestion-administradores': 'Gestión de Administradores',
         '/admin/gestion-farmaceuticos': 'Gestión Farmacéutica',
-        '/admin/transacciones-farmacia': 'Transacciones de Farmacia',  // ← nuevo
-        '/admin/gestion-citas': 'Gestión de Citas',                    // ← nuevo
-        '/admin/reportes': 'Reportes',                                  // ← nuevo
+        '/admin/gestion-roles': 'Gestión de Roles',
+        '/admin/transacciones-farmacia': 'Transacciones de Farmacia',  
+        '/admin/gestion-citas': 'Gestión de Citas',                   
+        '/admin/reportes': 'Reportes',                                 
         '/soporte/dashboard': 'Dashboard',
         '/soporte/pacientes': 'Gestión de Pacientes',
         '/soporte/medicos': 'Gestión de Médicos',
