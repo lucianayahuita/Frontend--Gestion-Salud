@@ -101,6 +101,11 @@ const routes = [
         path: 'citas',
         name: 'MedicoCitas',
         component: () => import('@/modules/medicos/components/gestionMisCitasMedico.vue')
+      },
+      {
+        path: 'recetas',
+        name: 'MedicoRecetas',
+        component: () => import('@/modules/medicos/components/recetasEmitidas.vue') 
       }
     ]
   },
@@ -125,7 +130,12 @@ const routes = [
         path: 'disponibilidad',
         name: 'FarmaceuticoDisponibilidad',
         component: () => import('@/modules/farmaceuticos/components/ConsultaDisponibilidad.vue')
-      }
+      },
+      {
+        path: 'recetas',
+        name: 'FarmaceuticoRecetas',
+        component: () => import('@/modules/farmaceuticos/components/DespacharRecetas.vue')
+      },
     ]
   },
 
@@ -149,6 +159,11 @@ const routes = [
         path: 'perfil',
         name: 'PacientePerfil',
         component: () => import('@/modules/pacientes/components/gestionVerMiPerfil.vue')
+      },
+      {
+        path: 'recetas',
+        name: 'PacienteRecetas',
+        component: () => import('@/modules/pacientes/components/gestionMisRecetas.vue')
       }
     ]
   },

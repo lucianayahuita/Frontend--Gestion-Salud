@@ -305,7 +305,7 @@ export default {
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 .gestion-roles {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Sora', sans-serif;
   color: #3d5260;
   display: flex;
   flex-direction: column;
@@ -318,12 +318,13 @@ export default {
   align-items: center;
   justify-content: space-between;
   background: #fff;
+  font-family: 'Sora', sans-serif;
   border: 1px solid #e8f0ed;
   border-radius: 14px;
   padding: 18px 24px;
 }
 .page-sub {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   color: #1a2b2e;
   font-family: 'Sora', sans-serif;
 }
@@ -358,7 +359,7 @@ export default {
   font-size: 0.875rem;
 }
 .tabla thead tr {
-  background: #f7fcf9;
+  background: #1D9E75;
   border-bottom: 1px solid #e8f0ed;
 }
 .tabla th {
@@ -366,7 +367,7 @@ export default {
   text-align: left;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #2d5c46;
+  color: whitesmoke;
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }

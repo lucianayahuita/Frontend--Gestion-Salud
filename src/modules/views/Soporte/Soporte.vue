@@ -26,6 +26,17 @@
       </div>
     </div>
 
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3 class="chart-title">Volumen Mensual de Citas</h3>
+        <p class="chart-subtitle">Análisis comparativo del flujo de atenciones médicas por mes</p>
+      </div>
+      <div class="chart-container">
+        <span v-if="loadingStats" class="chart-skeleton"></span>
+        <Bar v-else :data="chartData" :options="chartOptions" />
+      </div>
+    </div>
+
     <h3 class="seccion-titulo">Accesos rápidos</h3>
     
     <div class="accesos-grid">
@@ -54,11 +65,18 @@ import { useAuthStore } from '@/store/auth.js';
 import api from '@/api/axios.js';
 import { Users, Stethoscope, Pill, CalendarDays, ChevronRight, Hand } from 'lucide-vue-next';
 
+// IMPORTACIÓN DE COMPONENTES PARA REGISTRO DE CHART.JS
+import { Bar } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
+
 export default {
   name: 'SoporteDashboard',
   components: {
     ChevronRight,
-    Hand 
+    Hand,
+    Bar
   },
   data() {
     return {
@@ -67,6 +85,32 @@ export default {
       totalMedicos: 0,
       totalFarmaceuticos: 0,
       citasHoy: 0,
+      citasMensuales: Array(12).fill(0),
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1a2b2e',
+            titleFont: { family: 'Sora', size: 12 },
+            bodyFont: { family: 'DM Sans', size: 13 },
+            padding: 12,
+            cornerRadius: 8,
+            displayColors: false
+          }
+        },
+        scales: {
+          y: {
+            grid: { color: '#f1f5f9', drawBorder: false },
+            ticks: { color: '#7a9aaa', font: { family: 'DM Sans', size: 11 }, stepSize: 1 }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#3d5260', font: { family: 'DM Sans', size: 12, weight: '500' } }
+          }
+        }
+      }
     };
   },
   computed: {
@@ -139,6 +183,21 @@ export default {
         },
       ];
     },
+    // Datos reactivos inyectados directamente al componente del gráfico
+    chartData() {
+      return {
+        labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+        datasets: [
+          {
+            label: 'Citas Concretadas',
+            backgroundColor: '#1D9E75',
+            hoverBackgroundColor: '#178562',
+            borderRadius: 6,
+            data: this.citasMensuales
+          }
+        ]
+      };
+    }
   },
   async mounted() {
     await this.cargarEstadisticas();
@@ -165,6 +224,24 @@ export default {
         this.citasHoy = Array.isArray(citas)
           ? citas.filter(c => c.fecha && c.fecha.startsWith(hoy)).length
           : 0;
+
+        // PROCESAMIENTO DE HISTORIAL MENSUAL PARA EL GRÁFICO
+        const conteoMensual = Array(12).fill(0);
+        if (Array.isArray(citas)) {
+          citas.forEach(cita => {
+            if (cita.fecha) {
+              // Extrae el índice del mes (formato esperado YYYY-MM-DD)
+              const partes = cita.fecha.split('-');
+              if (partes.length >= 2) {
+                const mesIndice = parseInt(partes[1], 10) - 1;
+                if (mesIndice >= 0 && mesIndice < 12) {
+                  conteoMensual[mesIndice]++;
+                }
+              }
+            }
+          });
+        }
+        this.citasMensuales = conteoMensual;
 
       } catch (err) {
         console.error('Error al cargar estadísticas:', err);
@@ -280,6 +357,46 @@ export default {
   font-size: 0.78rem;
   color: #7a9aaa;
   font-weight: 400;
+}
+
+/* ESTILOS ESTRUCTURALES DEL CONTENEDOR ANALÍTICO */
+.chart-card {
+  background: #ffffff;
+  border: 1px solid #e8f0ed;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.chart-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.chart-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a2b2e;
+}
+.chart-subtitle {
+  font-size: 0.78rem;
+  color: #7a9aaa;
+}
+.chart-container {
+  position: relative;
+  height: 220px;
+  width: 100%;
+}
+.chart-skeleton {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f8fafc 25%, #f1f5f9 50%, #f8fafc 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 8px;
 }
 
 .seccion-titulo {

@@ -4,6 +4,7 @@
     <header class="page-header">
       <div class="header-info">
         <h1 class="page-title">Medicamentos en almacen</h1>
+        <p class="page-subtitle">Administra el inventario de medicamentos, registra nuevos productos y mantén actualizado el stock disponible.</p>
       </div>
       
       <button class="btn-primary" @click="abrirModalCrear">

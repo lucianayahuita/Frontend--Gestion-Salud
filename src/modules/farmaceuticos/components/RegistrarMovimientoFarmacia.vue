@@ -37,7 +37,7 @@
               <input type="radio" v-model="formulario.tipo" value="salida" hidden />
               <div class="option-content">
                 <Upload :size="16" />
-                <span>Salida de Despacho</span>
+                <span>Salida Manual</span>
               </div>
             </label>
 
@@ -64,9 +64,13 @@
             type="number" 
             v-model="formulario.cantidad" 
             min="1" 
+            :max="formulario.tipo === 'salida' ? stockMaximo : undefined"
             class="form-control-input" 
-            placeholder="Ej. 50"
+            :placeholder="formulario.tipo === 'salida' ? `Máx. ${stockMaximo}` : 'Ej. 50'"
           />
+          <small v-if="formulario.tipo === 'salida' && formulario.medicamento_id" class="stock-helper">
+            No puedes retirar más de {{ stockMaximo }} unidades disponibles.
+          </small>
         </div>
 
         <div class="form-group">
@@ -75,7 +79,7 @@
             v-model="formulario.detalle" 
             rows="3" 
             class="form-control-input text-area-input" 
-            placeholder="Ej. Abastecimiento mensual de farmacia central o receta interna #..."
+            :placeholder="formulario.tipo === 'salida' ? 'Ej. Descarte por vencimiento, rotura o traspaso...' : 'Ej. Abastecimiento mensual de farmacia central...'"
           ></textarea>
         </div>
 
@@ -99,7 +103,7 @@
 </template>
 
 <script setup>
-import { watch } from 'vue';
+import { watch, computed } from 'vue';
 import { ArrowUpDown, AlertCircle, X, Download, Upload } from 'lucide-vue-next';
 import { useRegistrarMovimientoFarmacia } from '@/modules/farmaceuticos/composables/useRegistrarMovimientoFarmacia.js';
 
@@ -120,6 +124,13 @@ const {
   enviarFormulario
 } = useRegistrarMovimientoFarmacia();
 
+// Obtiene dinámicamente el stock máximo del medicamento seleccionado para las salidas
+const stockMaximo = computed(() => {
+  if (!formulario.value.medicamento_id) return 0;
+  const seleccionado = medicamentos.value.find(m => m.id === Number(formulario.value.medicamento_id));
+  return seleccionado ? seleccionado.stock : 0;
+});
+
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
     limpiarFormulario();
@@ -132,6 +143,12 @@ const cerrarModal = () => {
 };
 
 const guardarTransaccion = async () => {
+  // Validación extra en el cliente antes de ir al servidor por si es una salida inválida
+  if (formulario.value.tipo === 'salida' && Number(formulario.value.cantidad) > stockMaximo.value) {
+    alert(`Error: No tienes suficiente stock para realizar esta salida. Máximo disponible: ${stockMaximo.value} uds.`);
+    return;
+  }
+
   const exito = await enviarFormulario();
   if (exito) {
     emit('saved'); 
@@ -155,7 +172,6 @@ const guardarTransaccion = async () => {
 
 .header-icon-box { width: 38px; height: 38px; background: rgba(255,255,255,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
 .modal-title { font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 600; margin: 0; }
-.modal-subtitle { font-size: 12px; color: rgba(255, 255, 255, 0.75); margin: 2px 0 0 0; }
 
 .btn-close-x { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: none; border: none; color: white; cursor: pointer; opacity: 0.8; display: flex; align-items: center; justify-content: center; padding: 6px; border-radius: 50%; transition: all 0.2s; }
 .btn-close-x:hover { opacity: 1; background-color: rgba(255, 255, 255, 0.15); }
@@ -169,6 +185,8 @@ const guardarTransaccion = async () => {
 .form-control-input { padding: 12px 14px; border-radius: 10px; border: 1px solid #cbd5e1; font-family: inherit; font-size: 14px; outline: none; transition: all 0.2s; background-color: #f8fafc; }
 .form-control-input:focus { border-color: #115843; background-color: white; box-shadow: 0 0 0 3px rgba(17, 88, 67, 0.08); }
 .text-area-input { resize: none; }
+
+.stock-helper { font-size: 11px; color: #b91c1c; margin-top: 2px; font-weight: 500; }
 
 /* Controles de Entrada / Salida (Tabs) */
 .radio-toggle-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f1f5f9; padding: 4px; border-radius: 10px; }

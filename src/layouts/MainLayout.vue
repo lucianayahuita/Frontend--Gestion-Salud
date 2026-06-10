@@ -155,6 +155,15 @@
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Citas</span>
           </router-link>
+          <router-link to="/medico/recetas" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Recetas Emitidas</span>
+          </router-link>
         </template>
 
         <!-- Paciente -->
@@ -177,6 +186,15 @@
               </svg>
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Mi Perfil</span>
+          </router-link>
+          <router-link to="/paciente/recetas" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Mis recetas</span>
           </router-link>
         </template>
 
@@ -202,6 +220,16 @@
               </svg>
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Consulta Disponibilidad</span>
+          </router-link>
+
+          <router-link to="/farmaceutico/recetas" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Recetas Por Despachar</span>
           </router-link>
         </template>
 
@@ -379,6 +407,9 @@ export default {
         '/farmaceutico/disponibilidad': 'Consulta de Disponibilidad',
         '/farmacia/inventario': 'Inventario de Medicamentos',
         '/farmacia/recetas': 'Recetas Médicas',
+        '/medico/recetas': 'Recetas Emitidas',
+        'farmaceutico/recetas': 'Recetas Por Despachar',
+        'paciente/recetas': 'Mis Recetas',
       };
       return titles[this.$route?.path] || 'Panel';
     },
@@ -409,8 +440,6 @@ export default {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@500;600;700&display=swap');
-
-/* ── NO usar :root con var() en scoped — usar hex directos ── */
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 

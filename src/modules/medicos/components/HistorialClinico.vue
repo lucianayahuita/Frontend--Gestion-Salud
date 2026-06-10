@@ -113,40 +113,77 @@
           </div>
 
           <div v-else-if="tabActiva === 'recetas'" class="tab-pane">
-            <div v-if="historiasOrdenadas.length === 0" class="empty-state">
-              <PillIcon :size="48" class="empty-icon-svg" />
-              <p>No hay recetas registradas.</p>
+            <div v-if="cargandoRecetas" class="estado-loading-recetas">
+              <div class="loading-pulse-recetas"></div>
+              <span>Obteniendo recetas médicas actualizadas...</span>
             </div>
+
+            <p v-else-if="errorRecetas" class="error-banner">{{ errorRecetas }}</p>
+
+            <div v-else-if="recetas.length === 0" class="empty-state">
+              <PillIcon :size="48" class="empty-icon-svg" />
+              <p>No hay recetas médicas vinculadas al historial de este paciente.</p>
+            </div>
+
             <div v-else class="timeline">
               <div
-                v-for="(historia, index) in historiasOrdenadas"
-                :key="'rx-' + historia.id"
+                v-for="(receta, index) in recetas"
+                :key="'rx-api-' + receta.id"
                 class="tl-item"
                 :style="{ '--delay': index * 0.07 + 's' }"
               >
                 <div class="tl-node-col">
                   <div class="tl-index green">Rx</div>
-                  <div class="tl-line" v-if="index < historiasOrdenadas.length - 1"></div>
+                  <div class="tl-line" v-if="index < recetas.length - 1"></div>
                 </div>
+                
                 <div class="tl-card rx-card">
                   <div class="tl-card-top">
                     <div class="tl-date-badge green">
-                      <span class="tl-day">{{ getDia(historia.fecha) }}</span>
-                      <span class="tl-month">{{ getMes(historia.fecha) }}</span>
-                      <span class="tl-year">{{ getAnio(historia.fecha) }}</span>
+                      <span class="tl-day">{{ getDia(receta.cita?.fecha) }}</span>
+                      <span class="tl-month">{{ getMes(receta.cita?.fecha) }}</span>
+                      <span class="tl-year">{{ getAnio(receta.cita?.fecha) }}</span>
                     </div>
+                    
                     <div class="tl-card-header">
-                      <h4 class="tl-title green-title">Receta emitida en Consulta #{{ historia.id }}</h4>
-                      <p class="tl-motivo treatment-text-bold">{{ historia.tratamiento || 'Sin tratamiento registrado' }}</p>
+                      <div class="rx-header-meta">
+                        <h4 class="tl-title green-title">Receta Médica <span>#{{ receta.id }}</span></h4>
+                        <span :class="['estado-despacho-badge', receta.estado_despacho]">
+                          <component 
+                            :is="receta.estado_despacho === 'despachada' ? CheckCircle2Icon : ClockIcon" 
+                            :size="10" 
+                          />
+                          {{ receta.estado_despacho }}
+                        </span>
+                      </div>
+                      <p class="tl-motivo treatment-text-bold">
+                        <strong>Medicamento:</strong> {{ receta.medicamento?.nombre }}
+                      </p>
+                      <p class="rx-subtext">Emitido en Cita #{{ receta.cita_id }} (Médico #{{ receta.cita?.medico_id }})</p>
                     </div>
                   </div>
-                  <div class="tl-card-body" v-if="historia.observaciones">
-                    <div class="tl-field">
-                      <span class="tl-field-label text-green">
-                        <FileTextIcon :size="11" style="margin-right:3px;vertical-align:middle;" />
-                        Indicaciones y Observaciones
+
+                  <div class="tl-card-body">
+                    <div class="tl-field border-teal">
+                      <span class="tl-field-label text-blue">
+                        <PillIcon :size="11" style="margin-right:4px;vertical-align:middle;" />
+                        Posología y Duración
                       </span>
-                      <span class="tl-field-value">{{ historia.observaciones }}</span>
+                      <span class="tl-field-value highlight">
+                        Dosis: {{ receta.dosis }} <br>
+                        Frecuencia: {{ receta.frecuencia }}
+                      </span>
+                      <span class="rx-duracion-tag">Tratamiento por: {{ receta.duracion }}</span>
+                    </div>
+                    
+                    <div class="tl-field bg-soft-green">
+                      <span class="tl-field-label text-green">
+                        <FileTextIcon :size="11" style="margin-right:4px;vertical-align:middle;" />
+                        Indicaciones
+                      </span>
+                      <span class="tl-field-value treatment-text">
+                        {{ receta.indicaciones || 'Sin indicaciones adicionales' }}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -209,7 +246,7 @@
                 <span class="resumen-desc">Consultas totales</span>
               </div>
               <div class="resumen-stat">
-                <span class="resumen-num">{{ historiasOrdenadas.filter(h => h.tratamiento).length }}</span>
+                <span class="resumen-num">{{ recetas.length }}</span>
                 <span class="resumen-desc">Recetas emitidas</span>
               </div>
               <div class="resumen-stat" v-if="historiasOrdenadas.length > 0">
@@ -233,10 +270,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 
 import { useVerHistorialClinico } from '../composables/useVerHistorialClinico'
 import { useVerHistoriaClinica } from '../composables/useVerHistoriaClinica'
+// IMPORTAMOS EL NUEVO COMPOSABLE DE RECETAS
+import { useVerRecetasPaciente } from '../composables/useVerRecetasPaciente'
 import VerDetalleHistorial from '../components/VerDetalleHistorial.vue'
 
 import {
@@ -253,6 +292,8 @@ import {
   ScaleIcon,
   RulerIcon,
   BarChart2Icon,
+  Clock as ClockIcon,
+  CheckCircle2 as CheckCircle2Icon
 } from 'lucide-vue-next'
 
 const props = defineProps({ id: { type: String, required: true } })
@@ -274,6 +315,13 @@ const {
   cerrarModalDetalle,
 } = useVerHistoriaClinica()
 
+const {
+  recetas,
+  cargandoRecetas,
+  errorRecetas,
+  cargarRecetas
+} = useVerRecetasPaciente()
+
 const historiasOrdenadas = computed(() => {
   if (!historias.value) return []
   return [...historias.value].sort((a, b) => {
@@ -289,6 +337,12 @@ const tabs = [
   { id: 'consultas', nombre: 'Consultas', icon: StethoscopeIcon },
   { id: 'recetas',   nombre: 'Recetas',   icon: PillIcon },
 ]
+
+watch(tabActiva, (nuevaTab) => {
+  if (nuevaTab === 'recetas' && recetas.value.length === 0) {
+    cargarRecetas(props.id)
+  }
+})
 
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
@@ -306,10 +360,155 @@ function getInitials(n, a) {
   return ((n?.[0] ?? '') + (a?.[0] ?? '')).toUpperCase()
 }
 
-const exportarPDF = () => window.print()
+const exportarPDF = () => {
+  const paciente = datosPaciente.value
+  const historias = historiasOrdenadas.value
+  const listaRecetas = recetas.value
+  const fechaHoy = new Intl.DateTimeFormat('es-ES', {
+    day: '2-digit', month: 'long', year: 'numeric'
+  }).format(new Date())
 
-onMounted(() => cargarHistorial(props.id))
+  const seccionConsultas = historias.map((h, i) => `
+    <div class="bloque">
+      <p class="consulta-titulo">Consulta ${String(i + 1).padStart(2, '0')} &nbsp;·&nbsp; #${h.id} &nbsp;·&nbsp; ${formatearFecha(h.fecha)}</p>
+
+      <p class="etiqueta">Motivo de consulta</p>
+      <p class="valor">${h.motivo_consulta || '—'}</p>
+
+      <p class="etiqueta">Diagnóstico</p>
+      <p class="valor">${h.diagnostico || 'Pendiente de diagnóstico'}</p>
+
+      <p class="etiqueta">Tratamiento / Medicación</p>
+      <p class="valor">${h.tratamiento || 'Sin tratamiento indicado'}</p>
+
+      ${h.enfermedad_actual ? `
+      <p class="etiqueta">Enfermedad actual / Síntomas</p>
+      <p class="valor">${h.enfermedad_actual}</p>
+      ` : ''}
+
+      ${(h.presion_arterial || h.temperatura || h.saturacion || h.peso || h.talla) ? `
+      <p class="etiqueta">Signos vitales</p>
+      <p class="valor">
+        ${h.presion_arterial ? `Presión: ${h.presion_arterial} mmHg &nbsp;&nbsp;` : ''}
+        ${h.temperatura      ? `Temperatura: ${h.temperatura} °C &nbsp;&nbsp;`   : ''}
+        ${h.saturacion       ? `SpO₂: ${h.saturacion}% &nbsp;&nbsp;`             : ''}
+        ${h.peso             ? `Peso: ${h.peso} kg &nbsp;&nbsp;`                 : ''}
+        ${h.talla            ? `Talla: ${h.talla} m`                             : ''}
+      </p>
+      ` : ''}
+    </div>
+    ${i < historias.length - 1 ? '<hr class="separador">' : ''}
+  `).join('')
+
+  const seccionRecetas = listaRecetas.map((r, i) => `
+    <div class="bloque">
+      <p class="consulta-titulo">
+        Receta #${r.id} &nbsp;·&nbsp; ${formatearFecha(r.cita?.fecha)} &nbsp;·&nbsp;
+        <span class="estado-${r.estado_despacho}">${(r.estado_despacho || '').toUpperCase()}</span>
+      </p>
+
+      <p class="etiqueta">Medicamento</p>
+      <p class="valor">${r.medicamento?.nombre || '—'}</p>
+
+      <p class="etiqueta">Dosis</p>
+      <p class="valor">${r.dosis || '—'}</p>
+
+      <p class="etiqueta">Frecuencia</p>
+      <p class="valor">${r.frecuencia || '—'}</p>
+
+      <p class="etiqueta">Duración</p>
+      <p class="valor">${r.duracion || '—'}</p>
+
+      <p class="etiqueta">Indicaciones</p>
+      <p class="valor">${r.indicaciones || 'Sin indicaciones adicionales'}</p>
+    </div>
+    ${i < listaRecetas.length - 1 ? '<hr class="separador">' : ''}
+  `).join('')
+
+  const html = `
+    <div id="pdf-root">
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, #pdf-root { font-family: Arial, sans-serif; color: #1a1a1a; font-size: 12px; line-height: 1.6; }
+
+        .cabecera { margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid #059669; }
+        .cabecera-eyebrow { font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #059669; margin-bottom: 4px; }
+        .cabecera-nombre { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
+        .cabecera-meta { font-size: 10px; color: #555; }
+        .cabecera-fecha { font-size: 10px; color: #888; margin-top: 4px; }
+
+        .seccion-titulo {
+          font-size: 11px; font-weight: bold; text-transform: uppercase;
+          letter-spacing: 0.5px; color: #059669;
+          border-left: 3px solid #059669; padding-left: 8px;
+          margin: 20px 0 12px;
+        }
+
+        .bloque { margin-bottom: 10px; }
+        .consulta-titulo { font-size: 12px; font-weight: bold; color: #0f172a; margin-bottom: 8px; }
+
+        .etiqueta { font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.4px; color: #0284c7; margin-top: 6px; margin-bottom: 2px; }
+        .valor { font-size: 11px; color: #334155; }
+
+        /* ── Estado receta ── */
+        .estado-despachada { color: #047857; font-weight: bold; }
+        .estado-pendiente  { color: #b45309; font-weight: bold; }
+
+        .separador { border: none; border-top: 1px solid #e2e8f0; margin: 14px 0; }
+
+        .pie { margin-top: 24px; padding-top: 8px; border-top: 1px solid #e2e8f0; font-size: 9px; color: #aaa; text-align: center; }
+      </style>
+
+      <!-- Cabecera -->
+      <div class="cabecera">
+        <p class="cabecera-eyebrow">Historia Clínica</p>
+        <p class="cabecera-nombre">${paciente.nombre} ${paciente.apellido} ${paciente.segundo_apellido || ''}</p>
+        <p class="cabecera-meta">Paciente #${paciente.id} &nbsp;·&nbsp; CI ${paciente.ci} &nbsp;·&nbsp; ${historias.length} consulta(s) &nbsp;·&nbsp; ${listaRecetas.length} receta(s)</p>
+        <p class="cabecera-fecha">Generado el ${fechaHoy}</p>
+      </div>
+
+      <!-- Consultas -->
+      ${historias.length > 0 ? `
+        <p class="seccion-titulo">Consultas Médicas (${historias.length})</p>
+        ${seccionConsultas}
+      ` : ''}
+
+      <!-- Recetas -->
+      ${listaRecetas.length > 0 ? `
+        <p class="seccion-titulo">Recetas Médicas (${listaRecetas.length})</p>
+        ${seccionRecetas}
+      ` : ''}
+
+      <p class="pie">Gestión Salud &nbsp;·&nbsp; Historia Clínica de ${paciente.nombre} ${paciente.apellido}</p>
+    </div>
+  `
+
+  const contenedor = document.createElement('div')
+  contenedor.innerHTML = html
+  contenedor.style.position = 'absolute'
+  contenedor.style.left = '-9999px'
+  document.body.appendChild(contenedor)
+
+  import('html2pdf.js').then(({ default: html2pdf }) => {
+    html2pdf()
+      .set({
+        margin:      [12, 15, 12, 15],
+        filename:    `HC_${paciente.nombre}_${paciente.apellido}.pdf`,
+        image:       { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      })
+      .from(contenedor.querySelector('#pdf-root'))
+      .save()
+      .then(() => document.body.removeChild(contenedor))
+  })
+}
+onMounted(() => {
+  cargarHistorial(props.id)
+  cargarRecetas(props.id)
+})
 </script>
+
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=DM+Sans:wght@400;500;700&display=swap');
 
@@ -327,7 +526,6 @@ onMounted(() => cargarHistorial(props.id))
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Loading ── */
 .estado-loading {
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; gap: 16px; padding: 80px;
@@ -339,6 +537,16 @@ onMounted(() => cargarHistorial(props.id))
   animation: spin 0.9s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.estado-loading-recetas {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 12px; padding: 40px; color: #64748b; font-size: 14px;
+}
+.loading-pulse-recetas {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2.5px solid #e2e8f0; border-top-color: #10b981;
+  animation: spin 0.8s linear infinite;
+}
 
 .error-banner {
   background: #fef2f2; color: #dc2626; padding: 14px 18px;
@@ -498,6 +706,51 @@ onMounted(() => cargarHistorial(props.id))
 }
 .btn-ver-detalle:hover { background: #059669; color: white; border-color: #059669; }
 
+/* Meta-información y Badges de la Receta */
+.rx-header-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.rx-subtext {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 3px 0 0 0;
+}
+.estado-despacho-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 12px;
+  letter-spacing: 0.3px;
+}
+.estado-despacho-badge.despachada {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+.estado-despacho-badge.pendiente {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+.rx-duracion-tag {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #0369a1;
+  background: #e0f2fe;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
 /* ── Módulos Internos: Diagnóstico y Tratamiento ── */
 .tl-card-body {
   display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #e2e8f0; background: rgba(121, 192, 164, 0.42);
@@ -565,6 +818,27 @@ onMounted(() => cargarHistorial(props.id))
 .resumen-desc { font-size: 12px; color: #64748b; }
 .no-data { color: #94a3b8; font-size: 13px; font-style: italic; margin: 0; }
 
+/*para el pdf*/
+.pdf-consulta { border:1px solid #e2e8f0; border-radius:10px; margin-bottom:14px; overflow:hidden; page-break-inside:avoid; }
+      .pdf-consulta-header { display:flex; align-items:flex-start; gap:12px; padding:12px 16px; background:#f8fafc; border-bottom:1px solid #e2e8f0; }
+      .pdf-num { width:32px;height:32px;border-radius:8px;background:#f0fdf4;color:#166534;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid #bbf7d0; }
+      .pdf-num-rx { background:#d1fae5;color:#065f46; }
+      .pdf-consulta-meta { font-size:13px;color:#0f172a; }
+      .pdf-motivo { font-size:12px;color:#64748b;margin-top:3px; }
+      .pdf-badge { font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:10px;margin-left:8px; }
+      .pdf-badge.despachada { background:#ecfdf5;color:#047857; }
+      .pdf-badge.pendiente  { background:#fffbeb;color:#b45309; }
+      .pdf-campos { display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#e2e8f0; }
+      .pdf-campo { background:white;padding:10px 16px; }
+      .pdf-campo-full { grid-column:1/-1; }
+      .pdf-campo-label { display:block;font-size:10px;font-weight:700;text-transform:uppercase;color:#0284c7;margin-bottom:3px;letter-spacing:0.3px; }
+      .pdf-campo-valor { font-size:13px;color:#334155; }
+      .pdf-vitales { padding:12px 16px;background:#f0fdf4;border-top:1px solid #bbf7d0; }
+      .pdf-vitales-title { font-size:11px;font-weight:700;text-transform:uppercase;color:#059669;display:block;margin-bottom:10px; }
+      .pdf-vitales-grid { display:flex;gap:12px;flex-wrap:wrap; }
+      .pdf-vital { background:white;border:1px solid #bbf7d0;border-radius:8px;padding:8px 14px;text-align:center; }
+      .pdf-vital strong { display:block;font-size:14px;color:#0f172a; }
+      .pdf-vital span { font-size:10px;color:#64748b; }
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .hc-layout { grid-template-columns: 1fr; }

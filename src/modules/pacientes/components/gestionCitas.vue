@@ -1,5 +1,12 @@
 <template>
   <div class="agendar-page">
+    <div class="page-header">
+      <h1 class="page-title">Gestión de Citas Médicas</h1>
+      <p class="page-description">
+        Agenda nuevas consultas, reprograma tus citas vigentes o cancela tus reservas de forma rápida y segura. 
+      </p>
+    </div>
+
     <div class="agendar-grid">
       <div class="panel-form" :class="{ 'panel-form--editing': modoEdicion }">
         <h2 class="panel-title">
@@ -33,6 +40,7 @@
             type="date"
             :min="fechaMin"
             class="date-input"
+            @change="validarHoraSeleccionadaAlCambiarFecha"
           />
         </div>
 
@@ -55,7 +63,7 @@
       </div>
 
       <div class="panel-horarios">
-        <div v-if="!disponibilidad.length && !cargandoHorarios" class="horarios-empty">
+        <div v-if="!disponibilidadFiltrada.length && !cargandoHorarios" class="horarios-empty">
           <CalendarSearch :size="40" class="empty-icon" />
           <p>Selecciona un médico y una fecha para ver los horarios disponibles</p>
         </div>
@@ -69,13 +77,13 @@
           <p class="horarios-label">CITAS MÉDICAS DISPONIBLES</p>
           <p class="horarios-fecha">{{ fechaFormateada }}</p>
 
-          <div v-if="disponibilidad.length === 0" class="horarios-empty">
-            <p>No hay horarios disponibles para esta fecha</p>
+          <div v-if="disponibilidadFiltrada.length === 0" class="horarios-empty">
+            <p>No hay horarios disponibles o vigentes para esta fecha.</p>
           </div>
 
           <div v-else class="horarios-grid">
             <button
-              v-for="(slot, i) in disponibilidad"
+              v-for="(slot, i) in disponibilidadFiltrada"
               :key="i"
               class="hora-btn"
               :class="{ 'hora-btn--selected': horaSeleccionada === slot.hora }"
@@ -86,7 +94,7 @@
           </div>
 
           <button
-            v-if="disponibilidad.length > 0"
+            v-if="disponibilidadFiltrada.length > 0"
             class="btn-agendar"
             :class="{ 'btn-agendar--repro': modoEdicion }"
             @click="ejecutarAccionPrincipal"
@@ -121,7 +129,6 @@
       </div>
 
       <div v-else-if="citasPendientes.length > 0" class="citas-lista-container">
-        
         <div v-for="item in citasPendientes" :key="item.id" class="cita-card-horizontal m-bottom" style="margin-bottom: 15px;">
           <div class="cita-info-detalle">
             <div class="icon-bg">
@@ -178,13 +185,13 @@
     </div>
   </Teleport>
 </template>
+
 <script setup>
 import { ref, onMounted, nextTick, computed } from 'vue' 
 import { ChevronDown, CalendarSearch } from 'lucide-vue-next'
 import api from '@/api/axios.js'
 import { useAuthStore } from '@/store/auth' 
 
-// 1. Importación de Composables
 import { useAgendarCita } from '../composables/useAgendarCita'
 import { useVerMisCitas } from '../composables/useVerMisCitas' 
 import { useCancelarCita } from '../composables/useCancelarCita'
@@ -199,6 +206,7 @@ const exitoCancelacion = ref(false)
 
 const modoEdicion = ref(false);
 const citaIdParaReprogramar = ref(null);
+
 const { 
   citas: listaCitas, 
   cargando: cargandoCitas, 
@@ -210,9 +218,9 @@ const citasPendientes = computed(() => {
     item => item.estado && item.estado.toLowerCase() === 'pendiente'
   )
 })
-const { cancelar, estaCancelando, errorCancelacion } = useCancelarCita()
 
-const { reprogramar, reprogramando } = useReprogramarCita();
+const { cancelar, estaCancelando, errorCancelacion } = useCancelarCita()
+const { reprogramar, reprogramando, error: errorReprogramar } = useReprogramarCita();
 
 const {
   medicos,
@@ -233,6 +241,55 @@ const {
   confirmarCita,
 } = useAgendarCita()
 
+const obtenerFechaLocalHoy = () => {
+  const ahora = new Date()
+  const anio = ahora.getFullYear()
+  const mes = String(ahora.getMonth() + 1).padStart(2, '0')
+  const dia = String(ahora.getDate()).padStart(2, '0')
+  return `${anio}-${mes}-${dia}`
+}
+
+const disponibilidadFiltrada = computed(() => {
+  if (!disponibilidad.value) return []
+  
+  const hoyStr = obtenerFechaLocalHoy()
+
+  if (fechaSeleccionada.value !== hoyStr) {
+    return disponibilidad.value
+  }
+
+  const ahora = new Date()
+  const horaActual = ahora.getHours()
+  const minutosActuales = ahora.getMinutes()
+
+  return disponibilidad.value.filter(slot => {
+    if (!slot || !slot.hora) return false
+    const [horaSlot, minutosSlot] = slot.hora.split(':').map(Number)
+    
+    if (horaSlot > horaActual) return true
+    if (horaSlot === horaActual && minutosSlot > minutosActuales) return true
+    return false 
+  })
+})
+
+const validarHoraSeleccionadaAlCambiarFecha = () => {
+  if (!horaSeleccionada.value) return
+
+  const hoyStr = obtenerFechaLocalHoy()
+
+  if (fechaSeleccionada.value === hoyStr) {
+    const ahora = new Date()
+    const [horaSlot, minutosSlot] = horaSeleccionada.value.split(':').map(Number)
+    
+    const pasado = (horaSlot < ahora.getHours()) || 
+                   (horaSlot === ahora.getHours() && minutosSlot <= ahora.getMinutes())
+                   
+    if (pasado) {
+      horaSeleccionada.value = null 
+    }
+  }
+}
+
 onMounted(async () => {
   cargarMedicos();
   
@@ -251,7 +308,6 @@ onMounted(async () => {
   }
 });
 
-// 3. Funciones de Cancelación
 const prepararCancelacion = (id) => {
   citaIdSeleccionada.value = id
   mostrarModalConfirmar.value = true
@@ -269,8 +325,6 @@ const confirmarCancelacion = async () => {
   const ok = await cancelar(citaIdSeleccionada.value)
   if (ok) {
     mostrarModalConfirmar.value = false
-    
-    await nextTick()
     if (idPacienteActual.value) {
       await cargarCitas(idPacienteActual.value)
     }
@@ -291,10 +345,25 @@ const handleReprogramar = (item) => {
   modoEdicion.value = true;
   citaIdParaReprogramar.value = item.id;
   horaSeleccionada.value = null;
+  
+  nextTick(() => {
+    buscarDisponibilidad()
+  })
 };
 
 const ejecutarAccionPrincipal = async () => {
   error.value = null;
+  if (errorReprogramar) errorReprogramar.value = null;
+
+  const hoyStr = obtenerFechaLocalHoy()
+  if (fechaSeleccionada.value === hoyStr && horaSeleccionada.value) {
+    const ahora = new Date()
+    const [h, m] = horaSeleccionada.value.split(':').map(Number)
+    if (h < ahora.getHours() || (h === ahora.getHours() && m <= ahora.getMinutes())) {
+      error.value = "No puedes agendar en un horario que ya ha pasado."
+      return
+    }
+  }
 
   if (modoEdicion.value) {
     const datos = {
@@ -307,26 +376,37 @@ const ejecutarAccionPrincipal = async () => {
 
     const resultado = await reprogramar(citaIdParaReprogramar.value, datos);
     
-    if (resultado.success) {
+    if (resultado && resultado.success) {
       cancelarEdicion(); 
-      await cargarCitas(idPacienteActual.value);
-      await nextTick();
+      // RECARGA AUTOMÁTICA AL REPROGRAMAR
+      if (idPacienteActual.value) {
+        await cargarCitas(idPacienteActual.value);
+      }
       exito.value = "La cita ha sido reprogramada exitosamente.";
     }
   } else {
     const ok = await confirmarCita(); 
     if (ok) {
-      await cargarCitas(idPacienteActual.value);
-      await nextTick();
+      // RECARGA AUTOMÁTICA AL AGENDAR NUEVA CITA
+      if (idPacienteActual.value) {
+        await cargarCitas(idPacienteActual.value);
+      }
       exito.value = `¡Cita agendada correctamente para el ${fechaFormateada.value}!`;
+      
+      medicoId.value = null;
+      fechaSeleccionada.value = '';
+      horaSeleccionada.value = null;
+      disponibilidad.value = [];
     }
   }
+
   if (exito.value) {
     setTimeout(() => {
       exito.value = null;
     }, 5000);
   }
 };
+
 const cancelarEdicion = () => {
   modoEdicion.value = false;
   citaIdParaReprogramar.value = null;
@@ -343,8 +423,29 @@ const cancelarEdicion = () => {
 .agendar-page {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 4px;
   font-family: 'DM Sans', sans-serif;
+}
+
+.page-header {
+  border-bottom: 1px solid rgba(224, 238, 234, 0.6);
+  padding-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+.page-title {
+  font-size: 24px;
+  color:#1a2b2e;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.03em;
+  font-family: var(--font-work), sans-serif;
+}
+
+.page-description {
+  font-size: 16px;
+  color: #5a7a80;
+  line-height: 1.6;
+  margin: 0;
 }
 
 .agendar-grid {
@@ -355,7 +456,6 @@ const cancelarEdicion = () => {
 }
 @media (max-width: 768px) { .agendar-grid { grid-template-columns: 1fr; } }
 
-/* ── Panel formulario ── */
 .panel-form {
   background: white;
   border: 1.5px solid #e0eeea;
@@ -372,7 +472,6 @@ const cancelarEdicion = () => {
 }
 
 .divider-line { height: 1px; background: #e0eeea; margin-bottom: 20px; }
-
 .field-group { margin-bottom: 16px; }
 .field-label { display: block; font-size: 12px; font-weight: 600; color: #5a7a80; margin-bottom: 6px; }
 
@@ -418,7 +517,6 @@ const cancelarEdicion = () => {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Panel horarios ── */
 .panel-horarios {
   background: white; border: 1.5px solid #e0eeea;
   border-radius: 16px; padding: 28px 24px; min-height: 300px;
@@ -491,7 +589,7 @@ const cancelarEdicion = () => {
   color: #065f46;
   border-left: 4px solid #065f46;
 }
-/* Contenedor principal */
+
 .panel-cita-actual {
   background: white;
   border: 1.5px solid #e0eeea;
@@ -501,7 +599,6 @@ const cancelarEdicion = () => {
   width: 100%;
 }
 
-/* Card horizontal */
 .cita-card-horizontal {
   display: flex;
   justify-content: space-between;
@@ -548,7 +645,6 @@ const cancelarEdicion = () => {
   border-radius: 4px;
 }
 
-/* Botones */
 .cita-actions {
   display: flex;
   gap: 12px;
@@ -564,10 +660,7 @@ const cancelarEdicion = () => {
   cursor: pointer;
   transition: 0.2s;
 }
-
-.btn-repro:hover {
-  background: #f0f9f6;
-}
+.btn-repro:hover { background: #f0f9f6; }
 
 .btn-cancel {
   background: #fee2e2;
@@ -581,10 +674,7 @@ const cancelarEdicion = () => {
   align-items: center;
   gap: 8px;
 }
-
-.btn-cancel:hover:not(:disabled) {
-  background: #fecaca;
-}
+.btn-cancel:hover:not(:disabled) { background: #fecaca; }
 
 .no-cita-box {
   min-height: 100px !important;
@@ -598,29 +688,20 @@ const cancelarEdicion = () => {
   width: 14px;
   height: 14px;
 }
+
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(26, 43, 46, 0.8); 
   backdrop-filter: blur(4px); 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 20px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; padding: 20px;
 }
 
 .modal-box {
-  background: white;
-  padding: 32px;
-  border-radius: 20px; 
-  max-width: 420px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background: white; padding: 32px; border-radius: 20px; 
+  max-width: 420px; width: 100%; text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   border: 1px solid #e0eeea;
   animation: modalPop 0.3s ease-out;
 }
@@ -639,97 +720,36 @@ const cancelarEdicion = () => {
 }
 
 .modal-body p {
-  color: #5a7a80;
-  font-size: 14px;
-  line-height: 1.6;
-  margin-bottom: 8px;
-  font-family: 'Sora', sans-serif;
+  color: #5a7a80; font-size: 14px; line-height: 1.6; margin-bottom: 8px;
 }
 
-.modal-footer {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 28px;
-}
+.modal-footer { display: flex; gap: 12px; justify-content: center; margin-top: 28px; }
 
 .btn-ghost {
-  background: #f8fcfb;
-  border: 1.5px solid #e0eeea;
-  color: #5a7a80;
-  padding: 11px 24px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s;
+  background: #f8fcfb; border: 1.5px solid #e0eeea; color: #5a7a80;
+  padding: 11px 24px; border-radius: 10px; font-weight: 600;
+  font-size: 14px; cursor: pointer; transition: all 0.2s;
 }
+.btn-ghost:hover { background: #f0f9f6; color: #1a2b2e; }
 
-.btn-ghost:hover {
-  background: #f0f9f6;
-  border-color: #cedbd7;
-  color: #1a2b2e;
-}
-
-.modal-footer .btn-cancel {
-  padding: 11px 24px;
-  font-size: 14px;
-}
-
-.modal-body .alert--error {
-  margin-top: 16px;
-  padding: 10px;
-  font-size: 13px;
-  border-radius: 8px;
-}
-.panel-form--editing {
-  border-color: #f39c12 !important; 
-  background-color: #fffaf0;
-}
+.panel-form--editing { border-color: #f39c12 !important; background-color: #fffaf0; }
 
 .edit-badge {
-  background: #f39c12;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  text-align: center;
+  background: #f39c12; color: white; padding: 6px 12px;
+  border-radius: 8px; font-size: 12px; font-weight: bold; margin-bottom: 15px; text-align: center;
 }
 
 .btn-cancelar-repro {
-  width: 100%;
-  margin-top: 10px;
-  background: none;
-  border: 1px solid #d32f2f;
-  color: #d32f2f;
-  padding: 8px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 13px;
+  width: 100%; margin-top: 10px; background: none; border: 1px solid #d32f2f;
+  color: #d32f2f; padding: 8px; border-radius: 10px; cursor: pointer; font-size: 13px;
 }
 
-.btn-agendar--repro {
-  background-color: #f39c12 !important;
-}
+.btn-agendar--repro { background-color: #f39c12 !important; }
+.btn-agendar--repro:hover { background-color: #e67e22 !important; }
 
-.btn-agendar--repro:hover {
-  background-color: #e67e22 !important;
-}
-/* Responsive */
 @media (max-width: 768px) {
-  .cita-card-horizontal {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 20px;
-  }
-  .cita-actions {
-    width: 100%;
-  }
-  .btn-repro, .btn-cancel {
-    flex: 1;
-    justify-content: center;
-  }
+  .cita-card-horizontal { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .cita-actions { width: 100%; }
+  .btn-repro, .btn-cancel { flex: 1; justify-content: center; }
 }
 </style>

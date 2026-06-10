@@ -53,49 +53,69 @@
     </div>
 
     <div class="bottom-grid">
-      <div class="card">
+      
+      <div class="card chart-main-card">
         <div class="card-header">
-          <h2 class="card-title">Usuarios Recientemente Registrados</h2>
+          <h2 class="card-title card-title--accent">Demanda y Citas Médicas</h2>
+          <p class="chart-subtitle">Historial comparativo de citas atendidas este año</p>
         </div>
-        <div class="user-list">
-          <div v-if="cargando" class="empty">Cargando...</div>
-          <div v-else-if="usuariosRecientes.length === 0" class="empty">Sin usuarios recientes</div>
-          <div class="user-item" v-for="user in usuariosRecientes" :key="user.id">
-            <div class="user-avatar">{{ user.name.charAt(0).toUpperCase() }}</div>
-            <div class="user-info">
-              <span class="user-name">{{ user.name }}</span>
-              <span class="user-role">{{ user.role?.nombre || 'Sin rol' }}</span>
-            </div>
-            <span class="badge badge--active">Activo</span>
+        <div class="chart-body">
+          <div v-if="cargandoCitas || cargando" class="chart-loading-state">
+            <div class="mini-spinner"></div>
+          </div>
+          <div v-else class="chart-wrapper">
+            <Line :data="chartDataCitas" :options="chartOptionsCitas" />
           </div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title card-title--accent">Acciones Rápidas</h2>
+      <div class="side-panel">
+        
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title card-title--accent">Acciones Rápidas</h2>
+          </div>
+          <div class="action-list">
+            <button class="action-btn action-btn--dark" @click="mostrarModalMedico = true">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              Registrar Médico
+            </button>
+
+            <button class="action-btn action-btn--teal" @click="mostrarModalPaciente = true">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              Registrar Paciente
+            </button>
+
+            <button class="action-btn action-btn--soft" @click="mostrarModalAdmin = true">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              Registrar Personal de Soporte
+            </button>
+
+            <button class="action-btn action-btn--outline" @click="mostrarModalFarmaceutico = true">
+              <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              Registrar Farmacéutico
+            </button>
+          </div>
         </div>
-        <div class="action-list">
-          <button class="action-btn action-btn--dark" @click="mostrarModalMedico = true">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            Registrar Médico
-          </button>
 
-          <button class="action-btn action-btn--teal" @click="mostrarModalPaciente = true">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            Registrar Paciente
-          </button>
-
-          <button class="action-btn action-btn--soft" @click="mostrarModalAdmin = true">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            Registrar Personal de Soporte
-          </button>
-
-          <button class="action-btn action-btn--outline" @click="mostrarModalFarmaceutico = true">
-            <svg viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            Registrar Farmacéutico
-          </button>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Usuarios Recientemente Registrados</h2>
+          </div>
+          <div class="user-list">
+            <div v-if="cargando" class="empty">Cargando...</div>
+            <div v-else-if="usuariosRecientes.length === 0" class="empty">Sin usuarios recientes</div>
+            <div class="user-item" v-for="user in usuariosRecientes" :key="user.id">
+              <div class="user-avatar">{{ user.name.charAt(0).toUpperCase() }}</div>
+              <div class="user-info">
+                <span class="user-name">{{ user.name }}</span>
+                <span class="user-role">{{ user.role?.nombre || 'Sin rol' }}</span>
+              </div>
+              <span class="badge badge--active">Activo</span>
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
 
@@ -129,10 +149,15 @@ import { ref, computed, onMounted } from 'vue';
 import { Hand } from 'lucide-vue-next';
 import api from '@/api/axios.js';
 
+import { Line } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale, Filler } from 'chart.js';
+
 import registroPaciente from '@/modules/administradores/components/registroPaciente.vue';
 import registrarAdministrador from '@/modules/administradores/components/registrarAdministradores.vue';
 import registrarMedico from '@/modules/administradores/components/registrarMedico.vue';
 import registrarFarmaceutico from '@/modules/administradores/components/registrarFarmaceutico.vue';
+
+ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale, Filler);
 
 defineEmits(['ver', 'editar', 'eliminar'])
 
@@ -140,7 +165,9 @@ const nombreUsuario = ref('Administrador');
 const fechaActual = ref('');
 
 const cargando = ref(false);
+const cargandoCitas = ref(false);
 const usuarios = ref([]);
+const todasLasCitas = ref([]);
 
 const mostrarModalAdmin = ref(false);
 const mostrarModalPaciente = ref(false);
@@ -149,13 +176,18 @@ const mostrarModalFarmaceutico = ref(false);
 
 const cargarUsuarios = async () => {
   cargando.value = true;
+  cargandoCitas.value = true;
   try {
-    const { data } = await api.get('/users');
-    usuarios.value = data.data;
+    const { data: resUsers } = await api.get('/users');
+    usuarios.value = resUsers.data;
+
+    const { data: resCitas } = await api.get('/citas');
+    todasLasCitas.value = resCitas.data || [];
   } catch (err) {
-    console.error('Error al cargar usuarios', err);
+    console.error('Error al cargar datos en el dashboard', err);
   } finally {
     cargando.value = false;
+    cargandoCitas.value = false;
   }
 };
 
@@ -169,6 +201,72 @@ const conteos = computed(() => {
     farmaceuticos:   activos.filter(u => u.rol_id === 5).length, 
   };
 });
+
+const chartDataCitas = computed(() => {
+  const mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  const conteoMensual = Array(12).fill(0);
+
+  todasLasCitas.value.forEach(cita => {
+    if (cita.fecha) {
+      const mesIdx = new Date(cita.fecha + 'T00:00:00').getMonth();
+      if (mesIdx >= 0 && mesIdx <= 11) {
+        conteoMensual[mesIdx]++;
+      }
+    }
+  });
+
+  const mesActual = new Date().getMonth();
+  let mesesFiltro = [];
+  for (let i = 5; i >= 0; i--) {
+    let target = mesActual - i;
+    if (target < 0) target += 12;
+    mesesFiltro.push(target);
+  }
+
+  return {
+    labels: mesesFiltro.map(idx => mesesNombres[idx]),
+    datasets: [
+      {
+        label: 'Citas Registradas',
+        data: mesesFiltro.map(idx => conteoMensual[idx]),
+        borderColor: '#1D9E75',
+        backgroundColor: 'rgba(29, 158, 117, 0.08)',
+        fill: true,
+        tension: 0.38,
+        pointBackgroundColor: '#1D9E75',
+        pointHoverBackgroundColor: '#1a2b2e',
+        pointRadius: 4,
+        pointHoverRadius: 6
+      }
+    ]
+  };
+});
+
+const chartOptionsCitas = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: '#1a2b2e',
+      titleFont: { family: 'DM Sans', size: 12, weight: '600' },
+      bodyFont: { family: 'DM Sans', size: 12 },
+      padding: 10,
+      cornerRadius: 8
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      grid: { color: '#edf4f1' },
+      ticks: { color: '#5a7a80', font: { family: 'DM Sans', size: 11 }, stepSize: 1 }
+    },
+    x: {
+      grid: { display: false },
+      ticks: { color: '#1a2b2e', font: { family: 'DM Sans', size: 11, weight: '500' } }
+    }
+  }
+};
 
 const usuariosRecientes = computed(() =>
   usuarios.value
@@ -260,13 +358,20 @@ onMounted(() => {
 .stat-number { font-family: 'Sora', sans-serif; font-size: 32px; font-weight: 700; color: #1a2b2e; line-height: 1; }
 .stat-label { font-size: 12px; font-weight: 500; color: #5a7a80; }
 
-.bottom-grid { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; }
-@media (max-width: 820px) { .bottom-grid { grid-template-columns: 1fr; } }
+/* NUEVA DISPOSICIÓN DE LA MALLA INFERIOR */
+.bottom-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: stretch; }
+@media (max-width: 900px) { .bottom-grid { grid-template-columns: 1fr; } }
 
-.card { background: #fff; border: 1.5px solid #e0eeea; border-radius: 16px; overflow: hidden; }
+/* Panel contenedor derecho (Acciones + Usuarios) */
+.side-panel { display: flex; flex-direction: column; gap: 16px; }
+
+.card { background: #fff; border: 1.5px solid #e0eeea; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+.chart-main-card { height: 100%; min-height: 400px; } /* Se amplía la altura del gráfico para aprovechar el espacio */
+
 .card-header { padding: 16px 20px; border-bottom: 1px solid #edf4f1; }
-.card-title { font-size: 14px; font-weight: 600; color: #1a2b2e; margin: 0; }
+.card-title { font-size: 14px; font-weight: 600; color: #1a2b2e; margin: 0; font-family: 'Sora', sans-serif; }
 .card-title--accent { color: #1D9E75; }
+.chart-subtitle { font-size: 11.5px; color: #7a9aaa; margin: 4px 0 0 0; font-weight: 400; }
 
 .user-list { display: flex; flex-direction: column; }
 .user-item { display: flex; align-items: center; gap: 12px; padding: 13px 20px; border-bottom: 1px solid #f2f7f5; transition: background 0.15s; }
@@ -284,6 +389,11 @@ onMounted(() => {
 .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
 .badge--active { background: #d6f5eb; color: #0d7a63; }
 
+/* Ajustes de visualización del gráfico */
+.chart-body { padding: 24px; flex: 1; display: flex; align-items: center; justify-content: center; }
+.chart-wrapper { width: 100%; height: 100%; min-height: 320px; position: relative; }
+.chart-loading-state { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; }
+
 .empty { padding: 32px; text-align: center; color: #7a9aaa; font-size: 13.5px; }
 
 .action-list { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
@@ -300,4 +410,7 @@ onMounted(() => {
 .action-btn--soft:hover { background: #d6f5eb; }
 .action-btn--outline { background: #f4f8f7; color: #3d5260; border: 1.5px solid #dce8e4; }
 .action-btn--outline:hover { background: #e8f0ed; }
+
+.mini-spinner { width: 22px; height: 22px; border: 2.5px solid #dbf3ea; border-top-color: #0d7a63; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
