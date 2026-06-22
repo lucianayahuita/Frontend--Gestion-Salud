@@ -56,13 +56,18 @@ const routes = [
       {
         path: 'gestion-citas',
         name: 'AdminCitas',
-        component: () => import('@/modules/soporte/components/CitasProgramadas.vue') // ← reutiliza el de soporte
+        component: () => import('@/modules/soporte/components/CitasProgramadas.vue') 
       },
       {
         path: 'reportes',
         name: 'AdminReportes',
         component: () => import('@/modules/administradores/components/Reportes.vue')
       },
+      {
+        path: 'logs',
+        name: 'AdminLogs',
+        component: () => import('@/modules/administradores/components/Logs.vue')
+      }
     ]
   },
 

@@ -208,7 +208,7 @@ const procesarEstadisticasCitas = () => {
   for (let i = 5; i >= 0; i--) {
     let target = mesActual - i;
     if (target < 0) target += 12;
-    mesFiltro.push(target);
+    mesesFiltro.push(target); // <-- CORREGIDO: cambiado de mesFiltro a mesesFiltro
   }
 
   chartData.value = {
@@ -330,9 +330,8 @@ onBeforeUnmount(() => {
 }
 .cita-card-horizontal:hover { transform: translateY(-2px); border-color: #1D9E75; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
 
-/* --- ESTILOS DE EXPIRACIÓN NUEVOS --- */
 .cita-card-horizontal.cita-expired { background: #fdf2f2; border-color: #fca5a5; }
-.cita-card-horizontal.cita-expired:hover { border-color: #f87171; box-shrink: 0; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.03); }
+.cita-card-horizontal.cita-expired:hover { border-color: #f87171; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.03); }
 
 .cita-time { display: flex; align-items: center; gap: 6px; color: #0d7a63; font-weight: 700; min-width: 90px; font-size: 14px; }
 .cita-time.time-expired { color: #b91c1c; }
@@ -352,7 +351,6 @@ onBeforeUnmount(() => {
 .btn-atender { background: #0d9488; color: white; border: none; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s; white-space: nowrap; }
 .btn-atender:hover { background: #0f7a5a; }
 
-/* MODIFICACIONES BOTÓN DESHABILITADO */
 .btn-atender-disabled { background: #94a3b8 !important; color: #ffffff; cursor: not-allowed; opacity: 0.7; }
 
 .calendar-column { 
@@ -385,7 +383,7 @@ onBeforeUnmount(() => {
 .btn-reset:hover { background: #e0eeea; }
 
 .chart-subtitle { font-size: 12px; color: #7a9aaa; margin: -10px 0 16px 0; }
-.chart-container { height: 140px; position: relative; }
+.chart-container { height: 150px; position: relative; padding-bottom: 4px; }
 .chart-loading { display: flex; align-items: center; justify-content: center; height: 100%; }
 
 .state-msg { text-align: center; padding: 50px 30px; color: #7a9aaa; }

@@ -70,7 +70,6 @@
       </div>
 
       <div class="side-panel">
-        
         <div class="card">
           <div class="card-header">
             <h2 class="card-title card-title--accent">Acciones Rápidas</h2>
@@ -97,26 +96,26 @@
             </button>
           </div>
         </div>
+      </div>
 
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Usuarios Recientemente Registrados</h2>
-          </div>
-          <div class="user-list">
-            <div v-if="cargando" class="empty">Cargando...</div>
-            <div v-else-if="usuariosRecientes.length === 0" class="empty">Sin usuarios recientes</div>
-            <div class="user-item" v-for="user in usuariosRecientes" :key="user.id">
-              <div class="user-avatar">{{ user.name.charAt(0).toUpperCase() }}</div>
-              <div class="user-info">
-                <span class="user-name">{{ user.name }}</span>
-                <span class="user-role">{{ user.role?.nombre || 'Sin rol' }}</span>
-              </div>
-              <span class="badge badge--active">Activo</span>
+      <div class="card full-width-card">
+        <div class="card-header">
+          <h2 class="card-title">Usuarios Recientemente Registrados</h2>
+        </div>
+        <div class="user-list">
+          <div v-if="cargando" class="empty">Cargando...</div>
+          <div v-else-if="usuariosRecientes.length === 0" class="empty">Sin usuarios recientes</div>
+          <div class="user-item" v-for="user in usuariosRecientes" :key="user.id">
+            <div class="user-avatar">{{ user.name.charAt(0).toUpperCase() }}</div>
+            <div class="user-info">
+              <span class="user-name">{{ user.name }}</span>
+              <span class="user-role">{{ user.role?.nombre || 'Sin rol' }}</span>
             </div>
+            <span class="badge badge--active">Activo</span>
           </div>
         </div>
-
       </div>
+
     </div>
 
     <registroPaciente
@@ -358,15 +357,44 @@ onMounted(() => {
 .stat-number { font-family: 'Sora', sans-serif; font-size: 32px; font-weight: 700; color: #1a2b2e; line-height: 1; }
 .stat-label { font-size: 12px; font-weight: 500; color: #5a7a80; }
 
-/* NUEVA DISPOSICIÓN DE LA MALLA INFERIOR */
-.bottom-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; align-items: stretch; }
-@media (max-width: 900px) { .bottom-grid { grid-template-columns: 1fr; } }
+.bottom-grid { 
+  display: grid; 
+  grid-template-columns: 1fr 340px; 
+  gap: 16px; 
+  align-items: start; 
+}
 
-/* Panel contenedor derecho (Acciones + Usuarios) */
+.full-width-card {
+  grid-column: 1 / -1; 
+}
+
+@media (max-width: 1000px) { 
+  .bottom-grid { grid-template-columns: 1fr; } 
+  .full-width-card { grid-column: auto; }
+}
+
 .side-panel { display: flex; flex-direction: column; gap: 16px; }
 
 .card { background: #fff; border: 1.5px solid #e0eeea; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
-.chart-main-card { height: 100%; min-height: 400px; } /* Se amplía la altura del gráfico para aprovechar el espacio */
+
+.chart-main-card { 
+  height: 300px; 
+}
+
+.chart-body { 
+  padding: 12px 16px; 
+  flex: 1; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  height: calc(100% - 60px);
+}
+
+.chart-wrapper { 
+  width: 100%; 
+  height: 100%; 
+  position: relative; 
+}
 
 .card-header { padding: 16px 20px; border-bottom: 1px solid #edf4f1; }
 .card-title { font-size: 14px; font-weight: 600; color: #1a2b2e; margin: 0; font-family: 'Sora', sans-serif; }
@@ -389,11 +417,7 @@ onMounted(() => {
 .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
 .badge--active { background: #d6f5eb; color: #0d7a63; }
 
-/* Ajustes de visualización del gráfico */
-.chart-body { padding: 24px; flex: 1; display: flex; align-items: center; justify-content: center; }
-.chart-wrapper { width: 100%; height: 100%; min-height: 320px; position: relative; }
 .chart-loading-state { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; }
-
 .empty { padding: 32px; text-align: center; color: #7a9aaa; font-size: 13.5px; }
 
 .action-list { display: flex; flex-direction: column; gap: 8px; padding: 12px; }

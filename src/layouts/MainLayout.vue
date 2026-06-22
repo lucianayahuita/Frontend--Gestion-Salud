@@ -130,6 +130,19 @@
             </span>
             <span class="nav-label" v-if="!sidebarCollapsed">Reportes</span>
           </router-link>
+
+          <div class="nav-section-label" v-if="!sidebarCollapsed">Seguridad</div>
+
+          <router-link :to="{ name: 'AdminLogs' }" class="nav-item" active-class="nav-item--active">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="nav-label" v-if="!sidebarCollapsed">Logs de Seguridad</span>
+          </router-link>
         </template>
 
         <!-- Médico -->
@@ -396,7 +409,8 @@ export default {
         '/admin/gestion-roles': 'Gestión de Roles',
         '/admin/transacciones-farmacia': 'Transacciones de Farmacia',  
         '/admin/gestion-citas': 'Gestión de Citas',                   
-        '/admin/reportes': 'Reportes',                                 
+        '/admin/reportes': 'Reportes',  
+        '/admin/logs': 'Logs de Seguridad',                               
         '/soporte/dashboard': 'Dashboard',
         '/soporte/pacientes': 'Gestión de Pacientes',
         '/soporte/medicos': 'Gestión de Médicos',
